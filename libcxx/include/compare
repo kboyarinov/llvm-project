@@ -117,11 +117,21 @@ namespace std {
     friend constexpr strong_ordering operator<=>(strong_ordering v, unspecified) noexcept;
     friend constexpr strong_ordering operator<=>(unspecified, strong_ordering v) noexcept;
   };
+
+  // [cmp.result], result of three-way comparison
+  template<class T, class U = T>
+  struct compare_three_way_result {
+    using type = see below;
+  };
+
+  template<class T, class U = T>
+    using compare_three_way_result_t = typename compare_three_way_result<T, U>::type;
 }
 */
 
 #include <__compare/common_comparison_category.h>
 #include <__compare/ordering.h>
+#include <__compare/compare_three_way_result.h>
 #include <__config>
 #include <type_traits>
 
