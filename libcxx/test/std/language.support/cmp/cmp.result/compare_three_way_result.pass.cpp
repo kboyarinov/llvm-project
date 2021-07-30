@@ -16,6 +16,8 @@
 #include <compare>
 #include <type_traits>
 
+#include "test_macros.h"
+
 template <class T, class U>
 concept compare_three_way_result_type_defined = requires {
     typename std::compare_three_way_result<T, U>::type;
@@ -41,47 +43,46 @@ constexpr void test_basic() {
 }
 
 constexpr void test_fundamentals() {
-    static_assert()
-    test_basic<std::strong_ordering, int>;
-    test_basic<std::strong_ordering, short int>;
-    test_basic<std::strong_ordering, unsigned short int>;
-    test_basic<std::strong_ordering, long int>;
-    test_basic<std::strong_ordering, unsigned long int>
-    test_basic<std::strong_ordering, long long int>;
-    test_basic<std::strong_ordering, unsigned long long int>;
-    test_basic<std::strong_ordering, bool>;
-    test_basic<std::strong_ordering, void*>;
-    test_basic<std::strong_ordering, char*>;
-    test_basic<std::strong_ordering, char const*>;
-    test_basic<std::strong_ordering, char volatile*>;
-    test_basic<std::strong_ordering, char const volatile*>;
-    test_basic<std::strong_ordering, char>;
-    test_basic<std::strong_ordering, signed char>;
-    test_basic<std::strong_ordering, unsigned char>;
-    test_basic<std::strong_ordering, wchar_t>;
+    test_basic<std::strong_ordering, int>();
+    test_basic<std::strong_ordering, short int>();
+    test_basic<std::strong_ordering, unsigned short int>();
+    test_basic<std::strong_ordering, long int>();
+    test_basic<std::strong_ordering, unsigned long int>();
+    test_basic<std::strong_ordering, long long int>();
+    test_basic<std::strong_ordering, unsigned long long int>();
+    test_basic<std::strong_ordering, bool>();
+    test_basic<std::strong_ordering, void*>();
+    test_basic<std::strong_ordering, char*>();
+    test_basic<std::strong_ordering, char const*>();
+    test_basic<std::strong_ordering, char volatile*>();
+    test_basic<std::strong_ordering, char const volatile*>();
+    test_basic<std::strong_ordering, char>();
+    test_basic<std::strong_ordering, signed char>();
+    test_basic<std::strong_ordering, unsigned char>();
+    test_basic<std::strong_ordering, wchar_t>();
 #ifndef _LIBCPP_HAS_NO_CHAR8_T
-    test_basic<std::strong_ordering, char8_t>;
+    test_basic<std::strong_ordering, char8_t>();
 #endif
 #ifndef _LIBCPP_HAS_NO_UNICODE_CHARS
-    test_basic<std::strong_ordering, char16_t>;
-    test_basic<std::strong_ordering, char32_t>;
+    test_basic<std::strong_ordering, char16_t>();
+    test_basic<std::strong_ordering, char32_t>();
 #endif
 #ifndef _LIBCPP_HAS_NO_INT128
-    test_basic<std::strong_ordering, __int128_t>;
-    test_basic<std::strong_ordering, __uint128_t>;
+    test_basic<std::strong_ordering, __int128_t>();
+    test_basic<std::strong_ordering, __uint128_t>();
 #endif
-    test_basic<std::strong_ordering, std::size_t>;
+    test_basic<std::strong_ordering, std::size_t>();
 
-    test_basic<std::partial_ordering, float>;
-    test_basic<std::partial_ordering, double>;
-    test_basic<std::partial_ordering, long double>;
-    test_basic<std::partial_ordering, int, float>;
-    test_basic<std::partial_ordering, int, double>;
-    test_basic<std::partial_ordering, int, long double>;
+    test_basic<std::partial_ordering, float>();
+    test_basic<std::partial_ordering, double>();
+    test_basic<std::partial_ordering, long double>();
+    test_basic<std::partial_ordering, int, float>();
+    test_basic<std::partial_ordering, int, double>();
+    test_basic<std::partial_ordering, int, long double>();
 
     static_assert(!compare_three_way_result_type_defined<void, void>);
     static_assert(!compare_three_way_result_t_defined<void, void>);
-    static_assert(!compare_three_way_result_type_defined<std::nullptr_t, std::nullptr_t>));
+    static_assert(!compare_three_way_result_type_defined<std::nullptr_t, std::nullptr_t>);
     static_assert(!compare_three_way_result_t_defined<std::nullptr_t, std::nullptr_t>);
 }
 
@@ -91,7 +92,7 @@ struct OtherOperand {
 
 template <class SameOrder, class DifferentOrder>
 struct Operand {
-    SameOrder operator<=>(Operand) const = default;
+    SameOrder operator<=>(const Operand&) const = default;
     friend DifferentOrder operator<=>(Operand, OtherOperand) {
         return DifferentOrder::equivalent;
     }
@@ -100,10 +101,10 @@ struct Operand {
 template <class SameOrder, class DifferentOrder>
 constexpr void test() {
     using OT = Operand<SameOrder, DifferentOrder>;
-    test_basic<SameOrder, OT>;
-    test_basic<SameOrder, OT&>;
-    test_basic<DifferentOrder, OT, OtherOperand>;
-    test_basic<DifferentOrder, OT&, OtherOperand&>;
+    test_basic<SameOrder, OT>();
+    test_basic<SameOrder, OT&>();
+    test_basic<DifferentOrder, OT, OtherOperand>();
+    test_basic<DifferentOrder, OT&, OtherOperand&>();
 }
 
 constexpr void negative_test() {
