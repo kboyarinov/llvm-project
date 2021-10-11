@@ -8,9 +8,13 @@
 #ifndef TEST_SUPPORT_COMPARE_TYPES_H
 #define TEST_SUPPORT_COMPARE_TYPES_H
 
+#include <type_traits>
+#include <cstdint>
+#include "test_macros.h"
+
+#if TEST_STD_VER >= 20
 #include <compare>
 #include <concepts>
-#include <type_traits>
 
 // `noexcept` specifiers deliberately imperfect since not all programmers bother to put the
 // specifiers on their overloads.
@@ -527,5 +531,25 @@ struct ForwardingTestObject {
   constexpr bool operator>=(ForwardingTestObject&&) && { return true; }
   constexpr bool operator>=(const ForwardingTestObject&) const& { return false; }
 };
+#endif // TEST_STD_VER >= 20
+
+struct CompBase {
+  std::int32_t first;
+  std::int32_t second;
+};
+
+struct EqCompOnly : CompBase {
+  bool operator==(const EqCompOnly& rhs) const {
+    return (first == rhs.first) && (second == rhs.second);
+  }
+};
+
+struct LessCompOnly : CompBase {
+  bool operator<(const LessCompOnly& rhs) const {
+    return (first == rhs.first) ? (second < rhs.second) : (first < rhs.first);
+  }
+};
+
+struct LessAndEqComp : EqCompOnly, LessCompOnly {};
 
 #endif // TEST_SUPPORT_COMPARE_TYPES_H
