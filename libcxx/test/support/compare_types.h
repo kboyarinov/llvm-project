@@ -10,6 +10,7 @@
 
 #include <type_traits>
 #include <cstdint>
+#include <cassert>
 #include "test_macros.h"
 
 #if TEST_STD_VER >= 20
@@ -551,5 +552,27 @@ struct LessCompOnly : CompBase {
 };
 
 struct LessAndEqComp : EqCompOnly, LessCompOnly {};
+
+template <bool ExpectLess, bool ExpectEqual, typename T>
+void test_order_comparisons( const T& lhs, const T& rhs ) {
+  bool ExpectGreater = ExpectEqual ? false : !ExpectLess;
+  assert((lhs < rhs ) == ExpectLess);
+  assert((rhs < lhs) == ExpectGreater);
+  assert((lhs <= rhs) == (ExpectLess || ExpectEqual));
+  assert((rhs <= lhs) == (ExpectGreater || ExpectEqual));
+
+  assert((lhs > rhs) == ExpectGreater);
+  assert((rhs > lhs) == ExpectLess);
+  assert((lhs >= rhs) == (ExpectGreater || ExpectEqual));
+  assert((rhs >= lhs) == (ExpectLess || ExpectEqual));
+}
+
+template <bool ExpectEqual, typename T>
+void test_equality_comparisons( const T& lhs, const T& rhs ) {
+  assert((lhs == rhs) == ExpectEqual);
+  assert((rhs == lhs) == ExpectEqual);
+  assert((lhs != rhs) == !ExpectEqual);
+  assert((rhs != lhs) == !ExpectEqual);
+}
 
 #endif // TEST_SUPPORT_COMPARE_TYPES_H
