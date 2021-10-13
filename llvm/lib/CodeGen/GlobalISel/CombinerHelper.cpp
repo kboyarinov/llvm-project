@@ -2210,7 +2210,7 @@ bool CombinerHelper::matchCombineTruncOfShl(
            {DstTy, getTargetLowering().getPreferredShiftAmountTy(DstTy)}})) {
     KnownBits Known = KB->getKnownBits(ShiftAmt);
     unsigned Size = DstTy.getSizeInBits();
-    if (Known.getBitWidth() - Known.countMinLeadingZeros() <= Log2_32(Size)) {
+    if (Known.countMaxActiveBits() <= Log2_32(Size)) {
       MatchInfo = std::make_pair(ShiftSrc, ShiftAmt);
       return true;
     }
@@ -2370,7 +2370,8 @@ bool CombinerHelper::matchConstantOp(const MachineOperand &MOP, int64_t C) {
     return false;
   auto *MI = MRI.getVRegDef(MOP.getReg());
   auto MaybeCst = isConstantOrConstantSplatVector(*MI, MRI);
-  return MaybeCst.hasValue() && MaybeCst->getSExtValue() == C;
+  return MaybeCst.hasValue() && MaybeCst->getBitWidth() <= 64 &&
+         MaybeCst->getSExtValue() == C;
 }
 
 bool CombinerHelper::replaceSingleDefInstWithOperand(MachineInstr &MI,
@@ -3484,6 +3485,9 @@ bool CombinerHelper::matchTruncStoreMerge(MachineInstr &MI,
   assert(WideSrcVal.isValid());
 
   LLT WideStoreTy = MRI.getType(WideSrcVal);
+  // The wide type might not be a multiple of the memory type, e.g. s48 and s32.
+  if (WideStoreTy.getSizeInBits() % MemTy.getSizeInBits() != 0)
+    return false;
   const unsigned NumStoresRequired =
       WideStoreTy.getSizeInBits() / MemTy.getSizeInBits();
 
@@ -4595,8 +4599,12 @@ bool CombinerHelper::matchUMulHToLShr(MachineInstr &MI) {
   Register Dst = MI.getOperand(0).getReg();
   LLT Ty = MRI.getType(Dst);
   LLT ShiftAmtTy = getTargetLowering().getPreferredShiftAmountTy(Ty);
-  auto CstVal = isConstantOrConstantSplatVector(*MRI.getVRegDef(RHS), MRI);
-  if (!CstVal || CstVal->isOne() || !isPowerOf2_64(CstVal->getZExtValue()))
+  auto MatchPow2ExceptOne = [&](const Constant *C) {
+    if (auto *CI = dyn_cast<ConstantInt>(C))
+      return CI->getValue().isPowerOf2() && !CI->getValue().isOne();
+    return false;
+  };
+  if (!matchUnaryPredicate(MRI, RHS, MatchPow2ExceptOne, false))
     return false;
   return isLegalOrBeforeLegalizer({TargetOpcode::G_LSHR, {Ty, ShiftAmtTy}});
 }
