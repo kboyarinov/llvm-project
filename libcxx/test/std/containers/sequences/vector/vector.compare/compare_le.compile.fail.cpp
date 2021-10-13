@@ -8,7 +8,7 @@
 
 // <vector>
 
-// bool operator>(const vector& lhs, const vector& rhs);
+// bool operator<=(const vector& lhs, const vector& rhs);
 
 #include <vector>
 #include <cassert>
@@ -16,6 +16,6 @@
 #include "compare_types.h"
 
 int main(int, char**) {
-    const std::vector<LessCompOnly> c1, c2;
-    assert(!(c1 > c2));
+    const std::vector<EqCompOnly> c1, c2;
+    assert(c1 <= c2);
 }

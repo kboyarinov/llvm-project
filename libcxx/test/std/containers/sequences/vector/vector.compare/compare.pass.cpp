@@ -19,6 +19,8 @@
 #include <cassert>
 #include <cstdint>
 
+#include <iostream>
+
 #include "compare_types.h"
 
 int main(int, char**) {
@@ -79,7 +81,8 @@ int main(int, char**) {
                                /*ExpectEqual = */true>(c1, c2);
     }
     {
-        const std::vector<LessAndEqComp> c1{{1, 2}}, c2{{1, 2}};
+        const std::vector<LessAndEqComp> c1 = {{1, 2}};
+        const std::vector<LessAndEqComp> c2 = {{1, 2}};
 
         test_equality_comparisons</*ExpectEqual = */true>(c1, c2);
         test_order_comparisons</*ExpectLess = */false,
@@ -128,7 +131,7 @@ int main(int, char**) {
         const std::vector<LessAndEqComp> c2 = {{3, 3}};
 
         test_equality_comparisons</*ExpectEqual = */false>(c1, c2);
-        test_order_comparisons</*ExpectLess = */false,
+        test_order_comparisons</*ExpectLess = */true,
                                /*ExpectEqual = */false>(c1, c2);
     }
     {

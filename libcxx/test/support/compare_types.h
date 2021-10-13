@@ -534,24 +534,37 @@ struct ForwardingTestObject {
 };
 #endif // TEST_STD_VER >= 20
 
-struct CompBase {
+
+struct EqCompOnly {
   std::int32_t first;
   std::int32_t second;
-};
 
-struct EqCompOnly : CompBase {
-  bool operator==(const EqCompOnly& rhs) const {
-    return (first == rhs.first) && (second == rhs.second);
+  friend bool operator==(const EqCompOnly& lhs, const EqCompOnly& rhs) {
+    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
   }
 };
 
-struct LessCompOnly : CompBase {
-  bool operator<(const LessCompOnly& rhs) const {
-    return (first == rhs.first) ? (second < rhs.second) : (first < rhs.first);
+struct LessCompOnly {
+  std::int32_t first;
+  std::int32_t second;
+
+  friend bool operator<(const LessCompOnly& lhs, const LessCompOnly& rhs) {
+    return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
   }
 };
 
-struct LessAndEqComp : EqCompOnly, LessCompOnly {};
+struct LessAndEqComp {
+  std::int32_t first;
+  std::int32_t second;
+
+  friend bool operator<(const LessAndEqComp& lhs, const LessAndEqComp& rhs) {
+    return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
+  }
+
+  friend bool operator==(const LessAndEqComp& lhs, const LessAndEqComp& rhs) {
+    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
+  }
+};
 
 template <bool ExpectLess, bool ExpectEqual, typename T>
 void test_order_comparisons( const T& lhs, const T& rhs ) {
