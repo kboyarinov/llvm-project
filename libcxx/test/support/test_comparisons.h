@@ -171,4 +171,37 @@ void AssertComparisons2ConvertibleToBool()
     static_assert((std::is_convertible<decltype(std::declval<const T&>() != std::declval<const U&>()), bool>::value), "");
 }
 
+template <int Dummy>
+struct EqCompOnly {
+  std::int32_t first;
+  std::int32_t second;
+
+  friend bool operator==(const EqCompOnly& lhs, const EqCompOnly& rhs) {
+    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
+  }
+};
+
+template <int Dummy>
+struct LessCompOnly {
+  std::int32_t first;
+  std::int32_t second;
+
+  friend bool operator<(const LessCompOnly& lhs, const LessCompOnly& rhs) {
+    return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
+  }
+};
+
+struct LessAndEqComp {
+  std::int32_t first;
+  std::int32_t second;
+
+  friend bool operator<(const LessAndEqComp& lhs, const LessAndEqComp& rhs) {
+    return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
+  }
+
+  friend bool operator==(const LessAndEqComp& lhs, const LessAndEqComp& rhs) {
+    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
+  }
+};
+
 #endif // TEST_COMPARISONS_H

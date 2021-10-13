@@ -13,7 +13,6 @@
 #include <cassert>
 #include "test_macros.h"
 
-#if TEST_STD_VER >= 20
 #include <compare>
 #include <concepts>
 
@@ -532,60 +531,5 @@ struct ForwardingTestObject {
   constexpr bool operator>=(ForwardingTestObject&&) && { return true; }
   constexpr bool operator>=(const ForwardingTestObject&) const& { return false; }
 };
-#endif // TEST_STD_VER >= 20
-
-
-struct EqCompOnly {
-  std::int32_t first;
-  std::int32_t second;
-
-  friend bool operator==(const EqCompOnly& lhs, const EqCompOnly& rhs) {
-    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
-  }
-};
-
-struct LessCompOnly {
-  std::int32_t first;
-  std::int32_t second;
-
-  friend bool operator<(const LessCompOnly& lhs, const LessCompOnly& rhs) {
-    return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
-  }
-};
-
-struct LessAndEqComp {
-  std::int32_t first;
-  std::int32_t second;
-
-  friend bool operator<(const LessAndEqComp& lhs, const LessAndEqComp& rhs) {
-    return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
-  }
-
-  friend bool operator==(const LessAndEqComp& lhs, const LessAndEqComp& rhs) {
-    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
-  }
-};
-
-template <bool ExpectLess, bool ExpectEqual, typename T>
-void test_order_comparisons( const T& lhs, const T& rhs ) {
-  bool ExpectGreater = ExpectEqual ? false : !ExpectLess;
-  assert((lhs < rhs ) == ExpectLess);
-  assert((rhs < lhs) == ExpectGreater);
-  assert((lhs <= rhs) == (ExpectLess || ExpectEqual));
-  assert((rhs <= lhs) == (ExpectGreater || ExpectEqual));
-
-  assert((lhs > rhs) == ExpectGreater);
-  assert((rhs > lhs) == ExpectLess);
-  assert((lhs >= rhs) == (ExpectGreater || ExpectEqual));
-  assert((rhs >= lhs) == (ExpectLess || ExpectEqual));
-}
-
-template <bool ExpectEqual, typename T>
-void test_equality_comparisons( const T& lhs, const T& rhs ) {
-  assert((lhs == rhs) == ExpectEqual);
-  assert((rhs == lhs) == ExpectEqual);
-  assert((lhs != rhs) == !ExpectEqual);
-  assert((rhs != lhs) == !ExpectEqual);
-}
 
 #endif // TEST_SUPPORT_COMPARE_TYPES_H
