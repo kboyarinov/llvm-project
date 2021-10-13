@@ -17,37 +17,36 @@
 
 #include <vector>
 #include <cassert>
-#include <cstdint>
 
 #include "test_comparisons.h"
 
 int main(int, char**) {
     {
-        const std::vector<std::int32_t> c1, c2;
+        const std::vector<int> c1, c2;
         assert(testComparisons6(c1, c2, true, false));
     }
     {
-        const std::vector<std::int32_t> c1{1}, c2{2};
+        const std::vector<int> c1{1}, c2{2};
         assert(testComparisons6(c1, c2, false, true));
     }
     {
-        const std::vector<std::int32_t> c1, c2{2};
+        const std::vector<int> c1, c2{2};
         assert(testComparisons6(c1, c2, false, true));
     }
     {
-        const std::vector<std::int32_t> c1{1, 2, 1}, c2{1, 2, 2};
+        const std::vector<int> c1{1, 2, 1}, c2{1, 2, 2};
         assert(testComparisons6(c1, c2, false, true));
     }
     {
-        const std::vector<std::int32_t> c1{3, 2, 3}, c2{3, 1, 3};
+        const std::vector<int> c1{3, 2, 3}, c2{3, 1, 3};
         assert(testComparisons6(c1, c2, false, false));
     }
     {
-        const std::vector<std::int32_t> c1{1, 2}, c2{1, 2, 0};
+        const std::vector<int> c1{1, 2}, c2{1, 2, 0};
         assert(testComparisons6(c1, c2, false, true));
     }
     {
-        const std::vector<std::int32_t> c1{1, 2, 0}, c2{3};
+        const std::vector<int> c1{1, 2, 0}, c2{3};
         assert(testComparisons6(c1, c2, false, true));
     }
     {
@@ -88,11 +87,11 @@ int main(int, char**) {
         assert(testComparisons6(c1, c2, false, true));
     }
     {
-        assert((std::vector<std::int32_t>() == std::vector<std::int32_t>()));
-        assert(!(std::vector<std::int32_t>() != std::vector<std::int32_t>()));
-        assert(!(std::vector<std::int32_t>() < std::vector<std::int32_t>()));
-        assert((std::vector<std::int32_t>() <= std::vector<std::int32_t>()));
-        assert(!(std::vector<std::int32_t>() > std::vector<std::int32_t>()));
-        assert((std::vector<std::int32_t>() >= std::vector<std::int32_t>()));
+        assert((std::vector<int>() == std::vector<int>()));
+        assert(!(std::vector<int>() != std::vector<int>()));
+        assert(!(std::vector<int>() < std::vector<int>()));
+        assert((std::vector<int>() <= std::vector<int>()));
+        assert(!(std::vector<int>() > std::vector<int>()));
+        assert((std::vector<int>() >= std::vector<int>()));
     }
 }

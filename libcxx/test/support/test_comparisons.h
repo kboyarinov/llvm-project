@@ -19,12 +19,14 @@
 #define TEST_COMPARISONS_H
 
 #include <type_traits>
+#include <cassert>
 #include "test_macros.h"
 
 //  Test all six comparison operations for sanity
 template <class T, class U = T>
 TEST_CONSTEXPR_CXX14 bool testComparisons6(const T& t1, const U& t2, bool isEqual, bool isLess)
 {
+    assert(!(isEqual && isLess) && "isEqual and isLess cannot be both true");
     if (isEqual)
         {
         if (!(t1 == t2)) return false;
@@ -173,27 +175,21 @@ void AssertComparisons2ConvertibleToBool()
 
 template <int Dummy>
 struct EqCompOnly {
-  std::int32_t first;
-  std::int32_t second;
-
-  friend bool operator==(const EqCompOnly& lhs, const EqCompOnly& rhs) {
-    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
+  friend bool operator==(const EqCompOnly&, const EqCompOnly&) {
+    return true;
   }
 };
 
 template <int Dummy>
 struct LessCompOnly {
-  std::int32_t first;
-  std::int32_t second;
-
-  friend bool operator<(const LessCompOnly& lhs, const LessCompOnly& rhs) {
-    return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
+  friend bool operator<(const LessCompOnly&, const LessCompOnly&) {
+    return true;
   }
 };
 
 struct LessAndEqComp {
-  std::int32_t first;
-  std::int32_t second;
+  int first;
+  int second;
 
   friend bool operator<(const LessAndEqComp& lhs, const LessAndEqComp& rhs) {
     return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
