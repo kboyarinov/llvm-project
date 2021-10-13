@@ -8,13 +8,9 @@
 #ifndef TEST_SUPPORT_COMPARE_TYPES_H
 #define TEST_SUPPORT_COMPARE_TYPES_H
 
-#include <type_traits>
-#include <cstdint>
-#include <cassert>
-#include "test_macros.h"
-
 #include <compare>
 #include <concepts>
+#include <type_traits>
 
 // `noexcept` specifiers deliberately imperfect since not all programmers bother to put the
 // specifiers on their overloads.
