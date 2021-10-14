@@ -188,16 +188,16 @@ struct LessCompOnly {
 };
 
 struct LessAndEqComp {
-  int first;
-  int second;
+  int value;
+
+  LessAndEqComp(int v) : value(v) {}
 
   friend bool operator<(const LessAndEqComp& lhs, const LessAndEqComp& rhs) {
-    return (lhs.first == rhs.first) ? (lhs.second < rhs.second) : (lhs.first < rhs.first);
+    return lhs.value < rhs.value;
   }
 
   friend bool operator==(const LessAndEqComp& lhs, const LessAndEqComp& rhs) {
-    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
+    return lhs.value == rhs.value;
   }
 };
-
 #endif // TEST_COMPARISONS_H

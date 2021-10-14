@@ -22,32 +22,32 @@
 
 int main(int, char**) {
     {
-        std::vector<LessCompOnly<0>> c;
+        std::vector<LessCompOnly<0> > c;
         // expected-error@*:* {{invalid operands to binary expression}}
         TEST_IGNORE_NODISCARD (c == c);
     }
     {
-        std::vector<LessCompOnly<1>> c;
+        std::vector<LessCompOnly<1> > c;
         // expected-error@*:* {{invalid operands to binary expression}}
         TEST_IGNORE_NODISCARD (c != c);
     }
     {
-        std::vector<EqCompOnly<0>> c;
+        std::vector<EqCompOnly<0> > c;
         // expected-error@*:* {{invalid operands to binary expression}}
         TEST_IGNORE_NODISCARD (c < c);
     }
     {
-        std::vector<EqCompOnly<1>> c;
+        std::vector<EqCompOnly<1> > c;
         // expected-error@*:* {{invalid operands to binary expression}}
         TEST_IGNORE_NODISCARD (c <= c);
     }
     {
-        std::vector<EqCompOnly<2>> c;
+        std::vector<EqCompOnly<2> > c;
         // expected-error@*:* {{invalid operands to binary expression}}
         TEST_IGNORE_NODISCARD (c > c);
     }
     {
-        std::vector<EqCompOnly<3>> c;
+        std::vector<EqCompOnly<3> > c;
         // expected-error@*:* {{invalid operands to binary expression}}
         TEST_IGNORE_NODISCARD (c >= c);
     }
