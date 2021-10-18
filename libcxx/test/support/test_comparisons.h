@@ -173,20 +173,6 @@ void AssertComparisons2ConvertibleToBool()
     static_assert((std::is_convertible<decltype(std::declval<const T&>() != std::declval<const U&>()), bool>::value), "");
 }
 
-template <int Dummy>
-struct EqCompOnly {
-  friend bool operator==(const EqCompOnly&, const EqCompOnly&) {
-    return true;
-  }
-};
-
-template <int Dummy>
-struct LessCompOnly {
-  friend bool operator<(const LessCompOnly&, const LessCompOnly&) {
-    return true;
-  }
-};
-
 struct LessAndEqComp {
   int value;
 

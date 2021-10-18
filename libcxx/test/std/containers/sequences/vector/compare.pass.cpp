@@ -115,4 +115,6 @@ int main(int, char**) {
         assert(!(std::vector<int>() > std::vector<int>()));
         assert((std::vector<int>() >= std::vector<int>()));
     }
+
+    return 0;
 }
