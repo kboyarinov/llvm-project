@@ -42,20 +42,17 @@ C
 make(int size, int start = 0)
 {
     C c;
-    typedef typename C::value_type value_type;
     for (int i = 0; i < size; ++i)
-        c.push_back(value_type(start + i));
+        c.push_back(start + i);
     return c;
 }
 
 template <typename Vector>
 void test_get_basic(Vector& c, int N = 0) {
-    typedef typename Vector::value_type value_type;
-
     for (int i = 0; i < 10; ++i)
-        assert(c[i] == value_type(N + i));
+        assert(c[i] == N + i);
     for (int i = 0; i < 10; ++i)
-        assert(c.at(i) == value_type(N + i));
+        assert(c.at(i) == N + i);
 
 #ifndef TEST_HAS_NO_EXCEPTIONS
     try {
@@ -64,8 +61,8 @@ void test_get_basic(Vector& c, int N = 0) {
     } catch (std::out_of_range&) {}
 #endif
 
-    assert(c.front() == value_type(N));
-    assert(c.back() == value_type(N + 9));
+    assert(c.front() == N);
+    assert(c.back() == N + 9);
 }
 
 template <typename Vector>
@@ -78,27 +75,26 @@ void test_get(int N = 0) {
 
 template <typename Vector>
 void test_set(int N = 0) {
-    typedef typename Vector::value_type value_type;
     Vector c = make<Vector>(10, N);
 
     for (int i = 0; i < 10; ++i) {
-        assert(c[i] == value_type(N + i));
-        c[i] = value_type(N + i + 1);
-        assert(c[i] == value_type(N + i + 1));
+        assert(c[i] == N + i);
+        c[i] = N + i + 1;
+        assert(c[i] == N + i + 1);
     }
     for (int i = 0; i < 10; ++i) {
-        assert(c.at(i) == value_type(N + i + 1));
-        c.at(i) = value_type(N + i + 2);
-        assert(c.at(i) == value_type(N + i + 2));
+        assert(c.at(i) == N + i + 1);
+        c.at(i) = N + i + 2;
+        assert(c.at(i) == N + i + 2);
     }
 
-    assert(c.front() == value_type(N + 2));
-    c.front() = value_type(N + 3);
-    assert(c.front() == value_type(N + 3));
+    assert(c.front() == N + 2);
+    c.front() = N + 3;
+    assert(c.front() == N + 3);
 
-    assert(c.back() == value_type(N + 9 + 2));
-    c.back() = value_type(N + 9 + 3);
-    assert(c.back() == value_type(N + 9 + 3));
+    assert(c.back() == N + 9 + 2);
+    c.back() = N + 9 + 3;
+    assert(c.back() == N + 9 + 3);
 }
 
 template <typename Vector>
