@@ -32,6 +32,14 @@ int main(int, char**)
         assert(l2 == l);
         assert(l2.get_allocator() == other_allocator<int>(5));
     }
+    {
+        // Test copy assignment with equal allocator objects
+        std::vector<int, other_allocator<int>> l(3, 2, other_allocator<int>(3));
+        std::vector<int, other_allocator<int>> l2(l, other_allocator<int>(3));
+        l2 = l;
+        assert(l2 == l);
+        assert(l2.get_allocator() == other_allocator<int>(3));
+    }
 #if TEST_STD_VER >= 11
     {
         std::vector<int, min_allocator<int> > l(3, 2, min_allocator<int>());
