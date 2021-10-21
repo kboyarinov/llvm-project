@@ -66,11 +66,25 @@ void test_emplaceable_concept() {
 #endif
 }
 
+void test_assign_bigger() {
+  typedef forward_iterator<int*> It;
 
+  std::vector<int> src;
+  src.resize(256);
+  src.shrink_to_fit();
+
+  std::vector<int> dst;
+  dst.resize(128);
+  dst.shrink_to_fit();
+
+  dst.assign(It(&src[0]), It(&src[0] + src.size()));
+  assert(dst == src);
+}
 
 int main(int, char**)
 {
     test_emplaceable_concept();
+    test_assign_bigger();
 
   return 0;
 }
