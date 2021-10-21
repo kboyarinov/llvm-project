@@ -42,41 +42,41 @@ void check_vector_reverse_iterators() {
         vec.reserve(10);
         for (int i = 0; i < 10; ++i)
             vec.push_back(i);
-        size_t iterations = vec.size();
+        int iterations = 0;
 
         for (typename Vector::const_reverse_iterator it = vec.crbegin(); it != vec.crend(); ++it) {
-            assert(*it == (10 - iterations));
-            --iterations;
+            assert(*it == (10 - iterations - 1));
+            ++iterations;
         }
-        assert(iterations == 0);
-        iterations = vec.size();
+        assert(iterations == 10);
+        iterations = 0;
 
         const Vector& cvec = vec;
 
         for (typename Vector::const_reverse_iterator it = cvec.rbegin(); it != cvec.rend(); ++it) {
-            assert(*it == (10 - iterations));
-            --iterations;
+            assert(*it == (10 - iterations - 1));
+            ++iterations;
         }
-        assert(iterations == 0);
-        iterations = vec.size();
+        assert(iterations == 10);
+        iterations = 0;
 
         for (typename Vector::reverse_iterator it = vec.rbegin(); it != vec.rend(); ++it) {
-            assert(*it == (10 - iterations));
+            assert(*it == (10 - iterations - 1));
             *it = 40;
             assert(*it == 40);
-            --iterations;
+            ++iterations;
         }
-        assert(iterations == 0);
+        assert(iterations == 10);
 
-        assert(std::distance(vec.rbegin(), vec.end()) == 10);
+        assert(std::distance(vec.rbegin(), vec.rend()) == 10);
         assert(std::distance(cvec.rbegin(), cvec.rend()) == 10);
         assert(std::distance(vec.crbegin(), vec.crend()) == 10);
     }
 }
 
 int main(int, char**) {
-    check_vector_reverse_iterator<std::vector<int> >();
-    check_vector_reverse_iterator<std::vector<int, min_allocator<int> > >();
+    check_vector_reverse_iterators<std::vector<int> >();
+    check_vector_reverse_iterators<std::vector<int, min_allocator<int> > >();
 
     return 0;
 }
