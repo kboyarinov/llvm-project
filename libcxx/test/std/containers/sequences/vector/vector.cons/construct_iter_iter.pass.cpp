@@ -33,6 +33,11 @@ void test(Iterator first, Iterator last) {
   for (typename C::const_iterator i = c.cbegin(), e = c.cend(); i != e;
        ++i, ++first)
     assert(*i == *first);
+
+  C empty_c(first, first);
+  LIBCPP_ASSERT(c.__invariants());
+  assert(empty_c.empty());
+  LIBCPP_ASSERT(is_contiguous_container_asan_correct(empty_c));
 }
 
 static void basic_test_cases() {
