@@ -6,7 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-// UNSUPPORTED: c++03, c++11, c++14
+// UNSUPPORTED: c++03, c++11, c++14, c++17
 
 // <memory>
 //
@@ -55,7 +55,7 @@ using TupleOfAll = std::tuple<UsesLeading, UsesTrailing, UsesBoth, NotUses>;
 AllocatorType alloc;
 
 template <typename Tuple1, class Tuple2,
-          typename Indices = std::make_index_sequence<std::tuple_size<std::decay_t<Tuple1>>::value>>
+          typename Indices = std::make_index_sequence<std::tuple_size<std::remove_cvref_t<Tuple1>>::value>>
 void check_tuples(Tuple1&&, Tuple2&&);
 
 template <class T>
@@ -78,7 +78,7 @@ void check_single_arg(T&& first, T&& second) {
 
 template <class Arg1, class Arg2>
 void check_arg(Arg1&& arg1, Arg2&& arg2) {
-    if constexpr (IsTuple<std::decay_t<Arg1>>::value) {
+    if constexpr (IsTuple<std::remove_cvref_t<Arg1>>::value) {
         check_tuples(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
     } else {
         check_single_arg(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
