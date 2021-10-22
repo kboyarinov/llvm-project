@@ -13,21 +13,6 @@
 // template <class T, class Alloc, class... Args>
 //   constexpr auto uses_allocator_construction_args(const Alloc& alloc,
 //                                                   Args&&... args) noexcept;
-// template <class T, class Alloc, class Tuple1, class Tuple2>
-//   constexpr auto uses_allocator_construction_args(const Alloc& alloc, piecewise_construct_t,
-//                                                   Tuple1&& x, Tuple2&& y)
-//                                                   noexcept;
-// template <class T, class Alloc>
-//   constexpr auto uses_allocator_construction_args(const Alloc& alloc) noexcept;
-// template <class T, class Alloc, class U, class V>
-//   constexpr auto uses_allocator_construction_args(const Alloc& alloc,
-//                                                   U&& u, V&& v) noexcept;
-// template <class T, class Alloc, class U, class V>
-//   constexpr auto uses_allocator_construction_args(const Alloc& alloc,
-//                                                   const pair<U, V>& pr) noexcept;
-// template <class T, class Alloc, class U, class V>
-//   constexpr auto uses_allocator_construction_args(const Alloc& alloc,
-//                                                   pair<U, V>&& pr) noexcept;
 
 #include <memory>
 
