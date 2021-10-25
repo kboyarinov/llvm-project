@@ -39,34 +39,39 @@ void check_vector_reverse_iterators() {
     }
     {
         Vector vec;
+        const Vector& cvec = vec;
         vec.reserve(10);
         for (int i = 0; i < 10; ++i)
             vec.push_back(i);
-        int iterations = 0;
+        {
+            int iterations = 0;
 
-        for (typename Vector::const_reverse_iterator it = vec.crbegin(); it != vec.crend(); ++it) {
-            assert(*it == (10 - iterations - 1));
-            ++iterations;
+            for (typename Vector::const_reverse_iterator it = vec.crbegin(); it != vec.crend(); ++it) {
+                assert(*it == (10 - iterations - 1));
+                ++iterations;
+            }
+            assert(iterations == 10);
         }
-        assert(iterations == 10);
-        iterations = 0;
+        {
+            int iterations = 0;
 
-        const Vector& cvec = vec;
-
-        for (typename Vector::const_reverse_iterator it = cvec.rbegin(); it != cvec.rend(); ++it) {
-            assert(*it == (10 - iterations - 1));
-            ++iterations;
+            for (typename Vector::const_reverse_iterator it = cvec.rbegin(); it != cvec.rend(); ++it) {
+                assert(*it == (10 - iterations - 1));
+                ++iterations;
+            }
+            assert(iterations == 10);
         }
-        assert(iterations == 10);
-        iterations = 0;
+        {
+            int iterations = 0;
 
-        for (typename Vector::reverse_iterator it = vec.rbegin(); it != vec.rend(); ++it) {
-            assert(*it == (10 - iterations - 1));
-            *it = 40;
-            assert(*it == 40);
-            ++iterations;
+            for (typename Vector::reverse_iterator it = vec.rbegin(); it != vec.rend(); ++it) {
+                assert(*it == (10 - iterations - 1));
+                *it = 40;
+                assert(*it == 40);
+                ++iterations;
+            }
+            assert(iterations == 10);
         }
-        assert(iterations == 10);
 
         assert(std::distance(vec.rbegin(), vec.rend()) == 10);
         assert(std::distance(cvec.rbegin(), cvec.rend()) == 10);
