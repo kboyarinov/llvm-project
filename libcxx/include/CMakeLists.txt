@@ -392,6 +392,7 @@ set(files
   map
   math.h
   memory
+  memory_resource
   module.modulemap
   mutex
   new

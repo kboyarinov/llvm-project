@@ -768,6 +768,12 @@ _LIBCPP_BEGIN_NAMESPACE_STD _LIBCPP_END_NAMESPACE_STD
 
 #define _VSTD_FS _VSTD::__fs::filesystem
 
+#define _LIBCPP_BEGIN_NAMESPACE_PMR \
+  _LIBCPP_BEGIN_NAMESPACE_STD namespace pmr {
+
+#define _LIBCPP_END_NAMESPACE_PMR \
+  } _LIBCPP_END_NAMESPACE_STD
+
 #if __has_attribute(__enable_if__)
 #   define _LIBCPP_PREFERRED_OVERLOAD __attribute__ ((__enable_if__(true, "")))
 #endif

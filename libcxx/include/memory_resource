@@ -1,0 +1,95 @@
+// -*- C++ -*-
+//===-------------------------- memory ------------------------------------===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef _LIBCPP_MEMORY_RESOURCE
+#define _LIBCPP_MEMORY_RESOURCE
+
+// namespace std::pmr {
+//   class memory_resource {
+//   public:
+//     memory_resource() = default;
+//     memory_resource(const memory_resource&) = default;
+//     virtual ~memory_resource();
+
+//     memory_resource& operator=(const memory_resource&) = default;
+
+//     void* allocate(size_t bytes, size_t alignment = alignof(max_align_t)); // until C++20
+//     [[nodiscard]] void* allocate(size_t bytes, size_t alignment = alignof(max_align_t)); // since C++20
+
+//     bool is_equal(const memory_resource& other) const noexcept;
+//   private:
+//     virtual void* do_allocate(size_t bytes, size_t alignment) = 0;
+//     virtual void do_deallocate(void* p, size_t bytes, size_t alignment) = 0;
+
+//     virtual bool do_is_equal(const memory_resource& other) const noexcept = 0;
+
+//   }; // class memory_resource
+// }
+
+#include <__config>
+#include <cstddef>
+
+#if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
+#pragma GCC system_header
+#endif
+
+_LIBCPP_BEGIN_NAMESPACE_PMR
+
+class _LIBCPP_TYPE_VIS memory_resource
+{
+  static constexpr size_t __max_align = _LIBCPP_ALIGNOF(max_align_t);
+public:
+  memory_resource() = default;
+  memory_resource(const memory_resource&) = default;
+
+  virtual ~memory_resource() = default;
+
+
+  _LIBCPP_NODISCARD_AFTER_CXX17 _LIBCPP_INLINE_VISIBILITY
+  void* allocate(size_t __bytes, size_t __alignment = __max_align)
+  {
+      return do_allocate(__bytes, __alignment);
+  }
+
+  _LIBCPP_INLINE_VISIBILITY
+  void deallocate(void* __p, size_t __bytes, size_t __alignment = __max_align)
+  {
+      return do_deallocate(__p, __bytes, __alignment);
+  }
+
+  _LIBCPP_INLINE_VISIBILITY
+  bool is_equal(const memory_resource& __other) const _NOEXCEPT
+  {
+      return do_is_equal(__other);
+  }
+private:
+  virtual void* do_allocate(size_t, size_t) = 0;
+  virtual void do_deallocate(void*, size_t, size_t) = 0;
+  virtual bool do_is_equal(const memory_resource&) const _NOEXCEPT = 0;
+
+  _LIBCPP_INLINE_VISIBILITY
+  friend bool operator==(const memory_resource& __lhs,
+                         const memory_resource& __rhs) _NOEXCEPT
+  {
+    return &__lhs == &__rhs || __lhs.is_equal(__rhs);
+  }
+
+#if _LIBCPP_STD_VER > 17
+  _LIBCPP_INLINE_VISIBILITY
+  friend bool operator!=(const memory_resource& __lhs,
+                         const memory_resource& __rhs) _NOEXCEPT
+  {
+    return !(__lhs == __rhs);
+  }
+#endif
+}; // class memory_resource
+
+_LIBCPP_END_NAMESPACE_PMR
+
+#endif // _LIBCPP_MEMORY_RESOURCE
