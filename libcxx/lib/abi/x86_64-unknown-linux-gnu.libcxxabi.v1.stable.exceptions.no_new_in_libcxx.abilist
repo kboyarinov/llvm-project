@@ -1273,7 +1273,9 @@
 {'is_defined': True, 'name': '_ZNSt3__134__construct_barrier_algorithm_baseERl', 'type': 'FUNC'}
 {'is_defined': True, 'name': '_ZNSt3__13cinE', 'size': 168, 'type': 'OBJECT'}
 {'is_defined': True, 'name': '_ZNSt3__13pmr19new_delete_resourceEv', 'type': 'FUNC'}
+{'is_defined': True, 'name': '_ZNSt3__13pmr20get_default_resourceEv', 'type': 'FUNC'}
 {'is_defined': True, 'name': '_ZNSt3__13pmr20null_memory_resourceEv', 'type': 'FUNC'}
+{'is_defined': True, 'name': '_ZNSt3__13pmr20set_default_resourceEPNS0_15memory_resourceE', 'type': 'FUNC'}
 {'is_defined': True, 'name': '_ZNSt3__14__fs10filesystem10__absoluteERKNS1_4pathEPNS_10error_codeE', 'type': 'FUNC'}
 {'is_defined': True, 'name': '_ZNSt3__14__fs10filesystem10hash_valueERKNS1_4pathE', 'type': 'FUNC'}
 {'is_defined': True, 'name': '_ZNSt3__14__fs10filesystem11__canonicalERKNS1_4pathEPNS_10error_codeE', 'type': 'FUNC'}

@@ -9,7 +9,12 @@
 
 #include <memory_resource>
 #include <new>
-#include <cstdio>
+
+#ifndef __LIBCPP_HAS_NO_ATOMIC_HEADER
+#include <atomic>
+#elif !defined(_LIBCPP_HAS_NO_THREADS)
+#include <mutex>
+#endif
 
 _LIBCPP_BEGIN_NAMESPACE_PMR
 
@@ -63,6 +68,71 @@ memory_resource* new_delete_resource() _NOEXCEPT
 memory_resource* null_memory_resource() _NOEXCEPT
 {
     return &__null_resource;
+}
+
+#ifndef __LIBCPP_HAS_NO_ATOMIC_HEADER
+struct __default_resource_holder
+{
+    atomic<memory_resource*> __resource_ptr = new_delete_resource();
+
+    memory_resource* get() _NOEXCEPT
+    {
+        return __resource_ptr.load(memory_order_acquire);
+    }
+
+    memory_resource* exchange(memory_resource* __desired) _NOEXCEPT
+    {
+        __desired = __desired != nullptr ? __desired : new_delete_resource();
+        return __resource_ptr.exchange(__desired, memory_order_release);
+    }
+};
+#elif !defined(_LIBCPP_HAS_NO_THREADS)
+struct __default_resource_holder
+{
+    mutex __resource_mutex;
+    memory_resource* __resource_ptr = new_delete_resource();
+
+    memory_resource* get() _NOEXCEPT
+    {
+        lock_guard<mutex> g(__resource_lock);
+        return __resource_ptr;
+    }
+
+    memory_resource* exchange(memory_resource* __desired) _NOEXCEPT
+    {
+        __desired = __desired != nullptr ? __desired : new_delete_resource();
+        lock_guard<mutex> g(__resource_lock);
+        return exchange(__resource_ptr, __desired);
+    }
+};
+#else
+struct __default_resource_holder
+{
+    memory_resource* __resource_ptr = new_delete_resource();
+
+    memory_resource* get() _NOEXCEPT
+    {
+        return __resource_ptr;
+    }
+
+    memory_resource* exchange(memory_resource* __desired) _NOEXCEPT
+    {
+        __desired = __desired != nullptr ? __desired : new_delete_resource();
+        return exchange(__resource_ptr, __desired);
+    }
+};
+#endif
+
+static __default_resource_holder __default_resource;
+
+memory_resource* get_default_resource() _NOEXCEPT
+{
+    return __default_resource.get();
+}
+
+memory_resource* set_default_resource(memory_resource* __desired) _NOEXCEPT
+{
+    return __default_resource.exchange(__desired);
 }
 
 _LIBCPP_END_NAMESPACE_PMR
