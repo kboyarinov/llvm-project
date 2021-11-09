@@ -30,6 +30,9 @@
 //     virtual bool do_is_equal(const memory_resource& other) const noexcept = 0;
 
 //   }; // class memory_resource
+
+//   memory_resource* new_delete_resource() noexcept;
+//   memory_resource* null_memory_resource() noexcept;
 // }
 
 #include <__config>
@@ -89,6 +92,12 @@ private:
   }
 #endif
 }; // class memory_resource
+
+_LIBCPP_FUNC_VIS
+memory_resource* new_delete_resource() _NOEXCEPT;
+
+_LIBCPP_FUNC_VIS
+memory_resource* null_memory_resource() _NOEXCEPT;
 
 _LIBCPP_END_NAMESPACE_PMR
 
