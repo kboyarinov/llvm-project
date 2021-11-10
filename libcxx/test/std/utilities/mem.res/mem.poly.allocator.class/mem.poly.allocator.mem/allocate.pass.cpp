@@ -29,9 +29,9 @@ void testAllocateSizeAlignment() {
     TestResource r(1);
     std::pmr::polymorphic_allocator<ValueType> alloc = &r;
 
-    for (std::size_t n = 0; n < 15; ++n) {
+    for (std::size_t n = 1; n <= 10; ++n) {
         ValueType* ret = alloc.allocate(n);
-        assert(r.checkAlloc(ret, n * Size, Alignment));
+        assert(r.checkAlloc(ret, n * sizeof(ValueType), alignof(ValueType)));
 
         alloc.deallocate(ret, n);
         r.reset();
@@ -41,24 +41,17 @@ void testAllocateSizeAlignment() {
 #ifndef TEST_HAS_NO_EXCEPTIONS
 template <std::size_t Size>
 void testAllocateExceptionsForSize() {
-    // using ValueType = std::aligned_storage_t<Size>;
-    // using AllocType = std::pmr::polymorphic_allocator<ValueType>;
-    // using Traits = std::allocator_traits<AllocType>;
-    // TestResource r(1);
+    using ValueType = std::aligned_storage_t<Size>;
+    using AllocType = std::pmr::polymorphic_allocator<ValueType>;
+    using Traits = std::allocator_traits<AllocType>;
+    TestResource r(1);
 
-    // std::pmr::polymorphic_allocator<ValueType> alloc = &r;
+    std::pmr::polymorphic_allocator<ValueType> alloc = &r;
 
-    // std::size_t maxSize = Traits::max_size(alloc);
-    // // try {
-    // //     alloc.allocate(maxSize);
-    // // } catch (...) {
-    // //     assert(false);
-    // // }
-
-    // // try {
-    // //     alloc.allocate(maxSize + 1);
-    // //     assert(false);
-    // // } catch (const std::bad_array_new_length&) {}
+    try {
+        alloc.allocate(Traits::max_size(alloc) + 1);
+        assert(false);
+    } catch (const std::bad_array_new_length&) {}
 }
 #endif
 
@@ -71,20 +64,19 @@ int main(int, char**)
     }
     {
         testAllocateSizeAlignment<1, 1>();
-        // testAllocateSizeAlignment<1, 2>();
-        // testAllocateSizeAlignment<1, alignof(std::max_align_t)>();
-        // testAllocateSizeAlignment<2, 2>();
-        // testAllocateSizeAlignment<2, alignof(std::max_align_t)>();
-        // testAllocateSizeAlignment<73, 2>();
-        // testAllocateSizeAlignment<73, alignof(std::max_align_t)>();
+        testAllocateSizeAlignment<1, 2>();
+        testAllocateSizeAlignment<1, alignof(std::max_align_t)>();
+        testAllocateSizeAlignment<2, 2>();
+        testAllocateSizeAlignment<2, alignof(std::max_align_t)>();
+        testAllocateSizeAlignment<73, 2>();
+        testAllocateSizeAlignment<73, alignof(std::max_align_t)>();
     }
 #ifndef TEST_HAS_NO_EXCEPTIONS
     {
-        // testAllocateExceptionsForSize<1>();
-        // testAllocateExceptionsForSize<2>();
-        // testAllocateExceptionsForSize<4>();
-        // testAllocateExceptionsForSize<16>();
-        // testAllocateExceptionsForSize<73>();
+        testAllocateExceptionsForSize<2>();
+        testAllocateExceptionsForSize<4>();
+        testAllocateExceptionsForSize<16>();
+        testAllocateExceptionsForSize<73>();
     }
 #endif
     return 0;

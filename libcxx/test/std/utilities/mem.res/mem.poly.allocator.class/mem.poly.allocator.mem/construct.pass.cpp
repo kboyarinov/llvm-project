@@ -38,60 +38,48 @@ void testConstructBasic(Arg&& arg, UsesAllocatorType expected) {
     alloc.deallocate(p, 1);
 }
 
-template <class Alloc>
-void testDoesNotUse() {
-    using DoesNotUseType = DoesNotUsesAllocator<Alloc, /*Args = */1>;
+template <class T>
+void testConstruct(UsesAllocatorType expected) {
     int arg = 1;
     const int& carg = arg;
 
-    testConstructBasic<DoesNotUseType>(arg, UA_None);
-    testConstructBasic<DoesNotUseType>(carg, UA_None);
-    testConstructBasic<DoesNotUseType>(std::move(arg), UA_None);
-    testConstructBasic<DoesNotUseType>(std::move(carg), UA_None);
+    testConstructBasic<T>(arg, expected);
+    testConstructBasic<T>(carg, expected);
+    testConstructBasic<T>(std::move(arg), expected);
+    testConstructBasic<T>(std::move(carg), expected);
+}
+
+template <class Alloc>
+void testDoesNotUse() {
+    using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */1>;
+    testConstruct<DoesNotUseType>(UA_None);
 }
 
 template <class Alloc>
 void testUsesLeading() {
     using UsesLeadingType = UsesAllocatorV1<Alloc, /*Args = */1>;
-    int arg = 1;
-    const int& carg = arg;
-
-    testConstructBasic<UsesLeadingType>(arg, UA_AllocArg);
-    testConstructBasic<UsesLeadingType>(carg, UA_AllocArg);
-    testConstructBasic<UsesLeadingType>(std::move(arg), UA_AllocArg);
-    testConstructBasic<UsesLeadingType>(std::move(carg), UA_AllocArg);
+    testConstruct<UsesLeadingType>(UA_AllocArg);
 }
 
 template <class Alloc>
 void testUsesTrailing() {
     using UsesTrailingType = UsesAllocatorV2<Alloc, /*Args = */1>;
-    int arg1 = 1;
-    const int& carg = arg;
-
-    testConstructBasic<UsesTrailingType>(arg, UA_AllocLast);
-    testConstructBasic<UsesTrailingType>(carg, UA_AllocLast);
-    testConstructBasic<UsesTrailingType>(std::move(arg), UA_AllocLast);
-    testConstructBasic<UsesTrailingType>(std::move(carg), UA_AllocLast);
+    testConstruct<UsesTrailingType>(UA_AllocLast);
 }
 
 template <class Alloc>
 void testUsesBoth() {
     using UsesBoth = UsesAllocatorV3<Alloc, /*Args = */1>;
-    int arg = 1;
-    const int& carg = arg;
-
-    testConstructBasic<UsesBoth>(arg, UA_AllocArg);
-    testConstructBasic<UsesBoth>(carg, UA_AllocArg);
-    testConstructBasic<UsesBoth>(std::move(arg), UA_AllocArg);
-    testConstructBasic<UsesBoth>(std::move(carg), UA_AllocArg);
+    testConstruct<UsesBoth>(UA_AllocArg);
 }
 
 int main(int, char**)
 {
     {
         std::pmr::polymorphic_allocator<int> alloc;
-        ASSERT_SAME_TYPE(alloc.construct(nullptr, 1), void);
-        ASSERT_NOT_NOEXCEPT(alloc.construct(nullptr, 1));
+        int* ptr = nullptr;
+        ASSERT_SAME_TYPE(decltype(alloc.construct(ptr, 1)), void);
+        ASSERT_NOT_NOEXCEPT(alloc.construct(ptr, 1));
     }
     {
         testDoesNotUse<std::pmr::memory_resource*>();

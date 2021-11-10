@@ -14,8 +14,7 @@
 
 // template <class T1, class T2, class... Args1. class... Args2>
 // void polymorphic_allocator<T>::construct(std::pair<T1, T2>* p,
-//                                          std::piecewise_construct_t,
-//                                          std::tuple<Args1...>, std::tuple<Args2...>);
+//                                          std::pair<T1, T2>&& xy);
 
 #include <memory_resource>
 #include <type_traits>
@@ -24,41 +23,28 @@
 #include "test_macros.h"
 #include "uses_alloc_types.h"
 
-template <class Pair, class Arg1, class Arg2>
-void testConstructBasic(Arg1&& arg1, Arg2&& arg2,
-                            UsesAllocatorType expected1, UsesAllocatorType expected2)
+template <class Pair>
+void testConstruct(Pair&& arg,
+                   UsesAllocatorType expected1, UsesAllocatorType expected2)
 {
     std::pmr::polymorphic_allocator<int> int_alloc;
     std::pmr::polymorphic_allocator<Pair> alloc = int_alloc;
 
-    Pair* p = alloc.allocate(1);
+    auto p = alloc.allocate(1);
 
-    int_alloc.construct(p, std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
-    checkConstruct<Arg1&&>(p->first, expected1);
-    checkConstruct<Arg2&&>(p->second, expected2);
+    int_alloc.construct(p, std::move(arg));
+    checkConstruct<typename Pair::first_type&&>(p->first, expected1);
+    checkConstruct<typename Pair::second_type&&>(p->second, expected2);
 
     p->~Pair();
     alloc.deallocate(p, 1);
-}
-
-template <class Pair>
-void testConstruct(UsesAllocatorType expected1, UsesAllocatorType expected2) {
-    int arg1 = 1;
-    int arg2 = 2;
-    const int& carg1 = arg1;
-    const int& carg2 = arg2;
-
-    testConstructBasic<Pair>(arg1, carg2, expected1, expected2);
-    testConstructBasic<Pair>(carg1, arg2, expected1, expected2);
-    testConstructBasic<Pair>(std::move(arg1), std::move(carg2), expected1, expected2);
-    testConstructBasic<Pair>(std::move(carg1), std::move(arg2), expected1, expected2);
 }
 
 template <class Alloc>
 void testDoesNotUseAndDoesNotUse() {
     using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */1>;
     using PairType = std::pair<DoesNotUseType, DoesNotUseType>;
-    testConstruct<PairType>(UA_None, UA_None);
+    testConstruct<PairType>(PairType{1, 1}, UA_None, UA_None);
 }
 
 template <class Alloc>
@@ -67,8 +53,8 @@ void testDoesNotUseAndUsesLeading() {
     using UsesLeadingType = UsesAllocatorV1<Alloc, /*Args = */1>;
     using PairType1 = std::pair<DoesNotUseType, UsesLeadingType>;
     using PairType2 = std::pair<UsesLeadingType, DoesNotUseType>;
-    testConstruct<PairType1>(UA_None, UA_AllocArg);
-    testConstruct<PairType2>(UA_AllocArg, UA_None);
+    testConstruct<PairType1>(PairType1{1, 1}, UA_None, UA_AllocArg);
+    testConstruct<PairType2>(PairType2{1, 1}, UA_AllocArg, UA_None);
 }
 
 template <class Alloc>
@@ -77,8 +63,8 @@ void testDoesNotUseAndUsesTrailing() {
     using UsesTrailingType = UsesAllocatorV2<Alloc, /*Args = */1>;
     using PairType1 = std::pair<DoesNotUseType, UsesTrailingType>;
     using PairType2 = std::pair<UsesTrailingType, DoesNotUseType>;
-    testConstruct<PairType1>(UA_None, UA_AllocLast);
-    testConstruct<PairType2>(UA_AllocLast, UA_None);
+    testConstruct<PairType1>(PairType1{1, 1}, UA_None, UA_AllocLast);
+    testConstruct<PairType2>(PairType2{1, 1}, UA_AllocLast, UA_None);
 }
 
 template <class Alloc>
@@ -87,15 +73,15 @@ void testDoesNotUseAndUsesBoth() {
     using UsesBothType = UsesAllocatorV3<Alloc, /*Args = */1>;
     using PairType1 = std::pair<DoesNotUseType, UsesBothType>;
     using PairType2 = std::pair<UsesBothType, DoesNotUseType>;
-    testConstruct<PairType1>(UA_None, UA_AllocArg);
-    testConstruct<PairType2>(UA_AllocArg, UA_None);
+    testConstruct<PairType1>(PairType1{1, 1}, UA_None, UA_AllocArg);
+    testConstruct<PairType2>(PairType2{1, 1}, UA_AllocArg, UA_None);
 }
 
 template <class Alloc>
 void testUsesLeadingAndUsesLeading() {
     using UsesLeadingType = UsesAllocatorV1<Alloc, /*Args = */1>;
     using PairType = std::pair<UsesLeadingType, UsesLeadingType>;
-    testConstruct<PairType>(UA_AllocArg, UA_AllocArg);
+    testConstruct<PairType>(PairType{1, 1}, UA_AllocArg, UA_AllocArg);
 }
 
 template <class Alloc>
@@ -104,8 +90,8 @@ void testUsesLeadingAndUsesTrailing() {
     using UsesTrailingType = UsesAllocatorV2<Alloc, /*Args = */1>;
     using PairType1 = std::pair<UsesLeadingType, UsesTrailingType>;
     using PairType2 = std::pair<UsesTrailingType, UsesLeadingType>;
-    testConstruct<PairType1>(UA_AllocArg, UA_AllocLast);
-    testConstruct<PairType2>(UA_AllocLast, UA_AllocArg);
+    testConstruct<PairType1>(PairType1{1, 1}, UA_AllocArg, UA_AllocLast);
+    testConstruct<PairType2>(PairType2{1, 1}, UA_AllocLast, UA_AllocArg);
 }
 
 template <class Alloc>
@@ -114,16 +100,15 @@ void testUsesLeadingAndUsesBoth() {
     using UsesBothType = UsesAllocatorV3<Alloc, /*Args = */1>;
     using PairType1 = std::pair<UsesLeadingType, UsesBothType>;
     using PairType2 = std::pair<UsesBothType, UsesLeadingType>;
-    testConstruct<PairType1>(UA_AllocArg, UA_AllocArg);
-    testConstruct<PairType2>(UA_AllocArg, UA_AllocArg);
+    testConstruct<PairType1>(PairType1{1, 1}, UA_AllocArg, UA_AllocArg);
+    testConstruct<PairType2>(PairType2{1, 1}, UA_AllocArg, UA_AllocArg);
 }
 
 template <class Alloc>
 void testUsesTrailingAndUsesTrailing() {
     using UsesTrailingType = UsesAllocatorV2<Alloc, /*Args = */1>;
     using PairType = std::pair<UsesTrailingType, UsesTrailingType>;
-    testConstruct<PairType>(UA_AllocLast, UA_AllocArg);
-    testConstruct<PairType>(UA_AllocArg, UA_AllocLast);
+    testConstruct<PairType>(PairType{1, 1}, UA_AllocLast, UA_AllocArg);
 }
 
 template <class Alloc>
@@ -132,8 +117,8 @@ void testUsesTrailingAndUsesBoth() {
     using UsesBothType = UsesAllocatorV3<Alloc, /*Args = */1>;
     using PairType1 = std::pair<UsesTrailingType, UsesBothType>;
     using PairType2 = std::pair<UsesBothType, UsesTrailingType>;
-    testConstruct<PairType1>(UA_AllocLast, UA_AllocArg);
-    testConstruct<PairType1>(UA_AllocArg, UA_AllocLast);
+    testConstruct<PairType1>(PairType1{1, 1}, UA_AllocLast, UA_AllocArg);
+    testConstruct<PairType1>(PairType2{1, 1}, UA_AllocArg, UA_AllocLast);
 }
 
 int main(int, char**)
@@ -141,8 +126,8 @@ int main(int, char**)
     {
         std::pmr::polymorphic_allocator<int> alloc;
         std::pair<int, int>* pair_ptr = nullptr;
-        ASSERT_SAME_TYPE(decltype(alloc.construct(pair_ptr, 1, 2)), void);
-        ASSERT_NOT_NOEXCEPT(alloc.construct(pair_ptr, 1, 2));
+        ASSERT_SAME_TYPE(decltype(alloc.construct(pair_ptr, std::move(*pair_ptr))), void);
+        ASSERT_NOT_NOEXCEPT(alloc.construct(pair_ptr, std::move(*pair_ptr)));
     }
     {
         testDoesNotUseAndDoesNotUse<std::pmr::memory_resource*>();

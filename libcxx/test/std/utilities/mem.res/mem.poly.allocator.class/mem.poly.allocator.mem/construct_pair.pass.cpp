@@ -41,14 +41,14 @@ void testConstruct(UsesAllocatorType expected1, UsesAllocatorType expected2)
 
 template <class Alloc>
 void testDoesNotUseAndDoesNotUse() {
-    using DoesNotUseType = DoesNotUsesAllocator<Alloc, /*Args = */0>;
+    using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */0>;
     using PairType = std::pair<DoesNotUseType, DoesNotUseType>;
     testConstruct<PairType>(UA_None, UA_None);
 }
 
 template <class Alloc>
 void testDoesNotUseAndUsesLeading() {
-    using DoesNotUseType = DoesNotUsesAllocator<Alloc, /*Args = */0>;
+    using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */0>;
     using UsesLeadingType = UsesAllocatorV1<Alloc, /*Args = */0>;
     using PairType1 = std::pair<DoesNotUseType, UsesLeadingType>;
     using PairType2 = std::pair<UsesLeadingType, DoesNotUseType>;
@@ -58,7 +58,7 @@ void testDoesNotUseAndUsesLeading() {
 
 template <class Alloc>
 void testDoesNotUseAndUsesTrailing() {
-    using DoesNotUseType = DoesNotUsesAllocator<Alloc, /*Args = */0>;
+    using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */0>;
     using UsesTrailingType = UsesAllocatorV2<Alloc, /*Args = */0>;
     using PairType1 = std::pair<DoesNotUseType, UsesTrailingType>;
     using PairType2 = std::pair<UsesTrailingType, DoesNotUseType>;
@@ -68,7 +68,7 @@ void testDoesNotUseAndUsesTrailing() {
 
 template <class Alloc>
 void testDoesNotUseAndUsesBoth() {
-    using DoesNotUseType = DoesNotUsesAllocator<Alloc, /*Args = */0>;
+    using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */0>;
     using UsesBothType = UsesAllocatorV3<Alloc, /*Args = */0>;
     using PairType1 = std::pair<DoesNotUseType, UsesBothType>;
     using PairType2 = std::pair<UsesBothType, DoesNotUseType>;
@@ -126,44 +126,44 @@ int main(int, char**)
     {
         std::pmr::polymorphic_allocator<int> alloc;
         std::pair<int, int>* pair_ptr = nullptr;
-        ASSERT_SAME_TYPE(decltype(alloc.construct(pair_ptr);
-        ASSERT_NOT_NOEXCEPT(alloc.construct(pair_ptr);
+        ASSERT_SAME_TYPE(decltype(alloc.construct(pair_ptr)), void);
+        ASSERT_NOT_NOEXCEPT(alloc.construct(pair_ptr));
     }
     {
         testDoesNotUseAndDoesNotUse<std::pmr::memory_resource*>();
-        testDoesNotUseAndDoesNotUse<std::pmr::polymorphic_allocator>();
+        testDoesNotUseAndDoesNotUse<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testDoesNotUseAndUsesLeading<std::pmr::memory_resource*>();
-        testDoesNotUseAndUsesLeading<std::pmr::polymorphic_allocator>();
+        testDoesNotUseAndUsesLeading<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testDoesNotUseAndUsesTrailing<std::pmr::memory_resource*>();
-        testDoesNotUseAndUsesTrailing<std::pmr::polymorphic_allocator>();
+        testDoesNotUseAndUsesTrailing<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testDoesNotUseAndUsesBoth<std::pmr::memory_resource*>();
-        testDoesNotUseAndUsesBoth<std::pmr::polymorphic_allocator>();
+        testDoesNotUseAndUsesBoth<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesLeadingAndUsesLeading<std::pmr::memory_resource*>();
-        testUsesLeadingAndUsesLeading<std::pmr::polymorphic_allocator>();
+        testUsesLeadingAndUsesLeading<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesLeadingAndUsesTrailing<std::pmr::memory_resource*>();
-        testUsesLeadingAndUsesTrailing<std::pmr::polymorphic_allocator>();
+        testUsesLeadingAndUsesTrailing<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesLeadingAndUsesBoth<std::pmr::memory_resource*>();
-        testUsesLeadingAndUsesBoth<std::pmr::polymorphic_allocator>();
+        testUsesLeadingAndUsesBoth<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesTrailingAndUsesTrailing<std::pmr::memory_resource*>();
-        testUsesTrailingAndUsesTrailing<std::pmr::polymorphic_allocator>();
+        testUsesTrailingAndUsesTrailing<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesTrailingAndUsesBoth<std::pmr::memory_resource*>();
-        testUsesTrailingAndUsesBoth<std::pmr::polymorphic_allocator>();
+        testUsesTrailingAndUsesBoth<std::pmr::polymorphic_allocator<int>>();
     }
 
     return 0;

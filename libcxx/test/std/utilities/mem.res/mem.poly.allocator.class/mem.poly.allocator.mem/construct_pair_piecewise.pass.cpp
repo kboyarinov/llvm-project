@@ -25,8 +25,8 @@
 #include "uses_alloc_types.h"
 
 template <class Pair, class Arg1, class Arg2>
-void testConstructPairBasic(Arg1&& arg1, Arg2&& arg2,
-                            UsesAllocatorType expected1, UsesAllocatorType expected2)
+void testConstructBasic(Arg1&& arg1, Arg2&& arg2,
+                        UsesAllocatorType expected1, UsesAllocatorType expected2)
 {
     std::pmr::polymorphic_allocator<int> int_alloc;
     std::pmr::polymorphic_allocator<Pair> alloc = int_alloc;
@@ -49,22 +49,22 @@ void testConstruct(UsesAllocatorType expected1, UsesAllocatorType expected2) {
     const int& carg1 = arg1;
     const int& carg2 = arg2;
 
-    testConstructBasic<PairType>(arg1, carg2, expected1, expected2);
-    testConstructBasic<PairType>(carg1, arg2, expected1, expected2);
-    testConstructBasic<PairType>(std::move(arg1), std::move(carg2), expected1, expected2);
-    testConstructBasic<PairType>(std::move(carg1), std::move(arg2), expected1, expected2);
+    testConstructBasic<Pair>(arg1, carg2, expected1, expected2);
+    testConstructBasic<Pair>(carg1, arg2, expected1, expected2);
+    testConstructBasic<Pair>(std::move(arg1), std::move(carg2), expected1, expected2);
+    testConstructBasic<Pair>(std::move(carg1), std::move(arg2), expected1, expected2);
 }
 
 template <class Alloc>
 void testDoesNotUseAndDoesNotUse() {
-    using DoesNotUseType = DoesNotUsesAllocator<Alloc, /*Args = */1>;
+    using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */1>;
     using PairType = std::pair<DoesNotUseType, DoesNotUseType>;
     testConstruct<PairType>(UA_None, UA_None);
 }
 
 template <class Alloc>
 void testDoesNotUseAndUsesLeading() {
-    using DoesNotUseType = DoesNotUsesAllocator<Alloc, /*Args = */1>;
+    using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */1>;
     using UsesLeadingType = UsesAllocatorV1<Alloc, /*Args = */1>;
     using PairType1 = std::pair<DoesNotUseType, UsesLeadingType>;
     using PairType2 = std::pair<UsesLeadingType, DoesNotUseType>;
@@ -74,7 +74,7 @@ void testDoesNotUseAndUsesLeading() {
 
 template <class Alloc>
 void testDoesNotUseAndUsesTrailing() {
-    using DoesNotUseType = DoesNotUsesAllocator<Alloc, /*Args = */1>;
+    using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */1>;
     using UsesTrailingType = UsesAllocatorV2<Alloc, /*Args = */1>;
     using PairType1 = std::pair<DoesNotUseType, UsesTrailingType>;
     using PairType2 = std::pair<UsesTrailingType, DoesNotUseType>;
@@ -84,7 +84,7 @@ void testDoesNotUseAndUsesTrailing() {
 
 template <class Alloc>
 void testDoesNotUseAndUsesBoth() {
-    using DoesNotUseType = DoesNotUsesAllocator<Alloc, /*Args = */1>;
+    using DoesNotUseType = NotUsesAllocator<Alloc, /*Args = */1>;
     using UsesBothType = UsesAllocatorV3<Alloc, /*Args = */1>;
     using PairType1 = std::pair<DoesNotUseType, UsesBothType>;
     using PairType2 = std::pair<UsesBothType, DoesNotUseType>;
@@ -142,45 +142,45 @@ int main(int, char**)
     {
         std::pmr::polymorphic_allocator<int> alloc;
         std::pair<int, int>* pair_ptr = nullptr;
-        ASSERT_SAME_TYPE(decltype(alloc.construct(pair_ptr, std::piecewise_construct_t,
+        ASSERT_SAME_TYPE(decltype(alloc.construct(pair_ptr, std::piecewise_construct,
                                                   std::tuple{}, std::tuple{})), void);
         ASSERT_NOT_NOEXCEPT(alloc.construct(pair_ptr, std::piecewise_construct, std::tuple{}, std::tuple{}));
     }
     {
         testDoesNotUseAndDoesNotUse<std::pmr::memory_resource*>();
-        testDoesNotUseAndDoesNotUse<std::pmr::polymorphic_allocator>();
+        testDoesNotUseAndDoesNotUse<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testDoesNotUseAndUsesLeading<std::pmr::memory_resource*>();
-        testDoesNotUseAndUsesLeading<std::pmr::polymorphic_allocator>();
+        testDoesNotUseAndUsesLeading<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testDoesNotUseAndUsesTrailing<std::pmr::memory_resource*>();
-        testDoesNotUseAndUsesTrailing<std::pmr::polymorphic_allocator>();
+        testDoesNotUseAndUsesTrailing<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testDoesNotUseAndUsesBoth<std::pmr::memory_resource*>();
-        testDoesNotUseAndUsesBoth<std::pmr::polymorphic_allocator>();
+        testDoesNotUseAndUsesBoth<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesLeadingAndUsesLeading<std::pmr::memory_resource*>();
-        testUsesLeadingAndUsesLeading<std::pmr::polymorphic_allocator>();
+        testUsesLeadingAndUsesLeading<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesLeadingAndUsesTrailing<std::pmr::memory_resource*>();
-        testUsesLeadingAndUsesTrailing<std::pmr::polymorphic_allocator>();
+        testUsesLeadingAndUsesTrailing<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesLeadingAndUsesBoth<std::pmr::memory_resource*>();
-        testUsesLeadingAndUsesBoth<std::pmr::polymorphic_allocator>();
+        testUsesLeadingAndUsesBoth<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesTrailingAndUsesTrailing<std::pmr::memory_resource*>();
-        testUsesTrailingAndUsesTrailing<std::pmr::polymorphic_allocator>();
+        testUsesTrailingAndUsesTrailing<std::pmr::polymorphic_allocator<int>>();
     }
     {
         testUsesTrailingAndUsesBoth<std::pmr::memory_resource*>();
-        testUsesTrailingAndUsesBoth<std::pmr::polymorphic_allocator>();
+        testUsesTrailingAndUsesBoth<std::pmr::polymorphic_allocator<int>>();
     }
 
     return 0;

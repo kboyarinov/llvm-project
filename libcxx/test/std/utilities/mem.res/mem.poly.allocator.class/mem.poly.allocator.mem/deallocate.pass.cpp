@@ -28,11 +28,11 @@ void testDeallocateSizeAlignment() {
     TestResource r(1);
     std::pmr::polymorphic_allocator<ValueType> alloc = &r;
 
-    for (std::size_t n = 0; n < 10; ++n) {
+    for (std::size_t n = 1; n <= 10; ++n) {
         ValueType* ret = alloc.allocate(n);
 
         alloc.deallocate(ret, n);
-        assert(r.checkDealloc(ret, n * Size, Alignment));
+        assert(r.checkDealloc(ret, n * sizeof(ValueType), alignof(ValueType)));
 
         r.reset();
     }
