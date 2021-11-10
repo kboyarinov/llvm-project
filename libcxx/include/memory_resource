@@ -36,10 +36,62 @@
 
 //   memory_resource* set_default_resource(memory_resource* r) noexcept;
 //   memory_resource* get_default_resource() noexcept;
+
+//   template <class Tp>
+//   class polymorphic_allocator {
+//   public:
+//     using value_type = Tp;
+
+//     polymorphic_allocator() noexcept;
+//     polymorphic_allocator(memory_resource* r);
+
+//     polymorphic_allocator(const polymorphic_allocator& other) = default;
+
+//     template <class U>
+//       polymorphic_allocator(const polymorphic_allocator<U>& other) noexcept;
+
+//     polymorphic_allocator&
+//       operator=(const polymorphic_allocator& rhs) = delete;
+
+//     Tp* allocate(size_t n);
+//     void deallocate(Tp* p, size_t n);
+
+//     template <class T, class... Args>
+//     void construct(T* p, Args&&... args);
+
+//     template <class T1, class T2, class... Args1, class... Args2>
+//       void construct(pair<T1, T2>* p, piecewise_construct_t,
+//                      tuple<Args1...> x, tuple<Args2...> y);
+//     template <class T1, class T2>
+//       void construct(pair<T1, T2>* p);
+//     template <class T1, class T2, class U, class V>
+//       void construct(pair<T1, T2>* p, U&& x, V&& y);
+//     template <class T1, class T2, class U, class V>
+//       void construct(pair<T1, T2>* p, const pair<U, V>& pr);
+//     template <class T1, class T2, class U, class V>
+//       void construct(pair<T1, T2>* p, pair<U, V>&& pr);
+
+//     template <class T>
+//       void destroy(T* p);
+
+//     polymorphic_allocator select_on_container_copy_construction() const;
+
+//     memory_resource* resource() const;
+//   }; // class polymorphic_allocator
+
+//   template <class T1, class T2>
+//   bool operator==(const polymorphic_allocator<T1>& a,
+//                   const polymorphic_allocator<T2>& b) noexcept;
+
+//   template <class T1, class T2>
+//   bool operator!=(const polymorphic_allocator<T1>& a,
+//                   const polymorphic_allocator<T2>& b) noexcept;
 // }
 
 #include <__config>
+#include <__memory/uses_allocator_args.h>
 #include <cstddef>
+#include <limits>
 
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
 #pragma GCC system_header
@@ -107,6 +159,75 @@ memory_resource* set_default_resource(memory_resource*) _NOEXCEPT;
 
 _LIBCPP_FUNC_VIS
 memory_resource* get_default_resource() _NOEXCEPT;
+
+template <class _Tp>
+class polymorphic_allocator {
+public:
+    using value_type = _Tp;
+
+    polymorphic_allocator() _NOEXCEPT
+        : __resource(get_default_resource()) {}
+
+    polymorphic_allocator(memory_resource* __r)
+        : __resource(__r) {}
+
+    polymorphic_allocator(const polymorphic_allocator&) = default;
+
+    template <class _Up>
+    polymorphic_allocator(const polymorphic_allocator<_Up>& __other) _NOEXCEPT
+        : __resource(__other.resource()) {}
+
+    polymorphic_allocator& operator=(const polymorphic_allocator&) = delete;
+
+    _Tp* allocate(size_t __n)
+    {
+        if (__n > numeric_limits<size_t>::max() / sizeof(_Tp)) {
+            __throw_bad_array_new_length();
+        }
+        return static_cast<_Tp*>(__resource->allocate(__n * sizeof(_Tp), _LIBCPP_ALIGNOF(_Tp)));
+    }
+
+    void deallocate(_Tp* __p, size_t __n)
+    {
+        __resource->deallocate(__p, n * sizeof(_Tp), _LIBCPP_ALIGNOF(_Tp));
+    }
+
+    template <class _Up, class _Args>
+    void construct(_Up* __p, _Args&&... __args)
+    {
+        __uninitialized_construct_using_allocator(__p, *__resource(), _VSTD::forward<_Args>(__args)...);
+    }
+
+    template <class _Up>
+    void destroy(_Up* __p)
+    {
+        __p->~_Up();
+    }
+
+    polymorphic_allocator select_on_container_copy_construction() const
+    {
+        return polymorphic_allocator();
+    }
+
+    memory_resource* resource() const
+    {
+        return __resource;
+    }
+private:
+    memory_resource* __resource;
+}; // class polymorphic_allocator
+
+template <class _Tp, class _Up>
+bool operator==(const polymorphic_allocator<_Tp>& __a, const polymorphic_allocator<_Up>& __b) _NOEXCEPT
+{
+    return *__a.resource() == *__b.resource();
+}
+
+template <class _Tp, class _Up>
+bool operator!=(const polymorphic_allocator<_Tp>& __a, const polymorphic_allocator<_Up>& __b) _NOEXCEPT
+{
+    return !(__a == __b);
+}
 
 _LIBCPP_END_NAMESPACE_PMR
 
