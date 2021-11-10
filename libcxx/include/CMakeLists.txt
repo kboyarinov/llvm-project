@@ -228,6 +228,7 @@ set(files
   __memory/uninitialized_algorithms.h
   __memory/unique_ptr.h
   __memory/uses_allocator.h
+  __memory/uses_allocator_args.h
   __mutex_base
   __node_handle
   __nullptr

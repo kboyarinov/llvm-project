@@ -686,6 +686,7 @@ void* align(size_t alignment, size_t size, void*& ptr, size_t& space);
 #include <__memory/uninitialized_algorithms.h>
 #include <__memory/unique_ptr.h>
 #include <__memory/uses_allocator.h>
+#include <__memory/uses_allocator_args.h>
 #include <compare>
 #include <cstddef>
 #include <cstdint>
