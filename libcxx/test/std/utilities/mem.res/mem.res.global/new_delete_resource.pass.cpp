@@ -50,7 +50,19 @@ int main(int, char**)
     {
         std::pmr::memory_resource* resource = std::pmr::new_delete_resource();
         globalMemCounter.reset();
-        std::size_t alignment = 16;
+        std::size_t alignment = alignof(std::max_align_t);
+
+        void* ret = resource->allocate(50, alignment);
+        assert(globalMemCounter.checkNewCalledEq(1));
+        assert(globalMemCounter.checkLastNewSizeEq(50));
+
+        resource->deallocate(ret, 50, alignment);
+        assert(globalMemCounter.checkDeleteCalledEq(1));
+    }
+    {
+        std::pmr::memory_resource* resource = std::pmr::new_delete_resource();
+        globalMemCounter.reset();
+        std::size_t alignment = alignof(std::max_align_t) * 2;
 
         void* ret = resource->allocate(50, alignment);
         assert(ret != nullptr);
