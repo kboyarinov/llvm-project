@@ -23,8 +23,7 @@ int main(int, char**)
         std::pmr::polymorphic_allocator<int> alloc1;
         std::pmr::polymorphic_allocator<int> alloc2;
 
-        // expected-error {{use of deleted function}}
-        alloc1 = alloc2;
+        alloc1 = alloc2; // expected-error {{overload resolution selected deleted operator '='}}
     }
     return 0;
 }

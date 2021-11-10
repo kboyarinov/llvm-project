@@ -189,13 +189,13 @@ public:
 
     void deallocate(_Tp* __p, size_t __n)
     {
-        __resource->deallocate(__p, n * sizeof(_Tp), _LIBCPP_ALIGNOF(_Tp));
+        __resource->deallocate(__p, __n * sizeof(_Tp), _LIBCPP_ALIGNOF(_Tp));
     }
 
-    template <class _Up, class _Args>
+    template <class _Up, class... _Args>
     void construct(_Up* __p, _Args&&... __args)
     {
-        __uninitialized_construct_using_allocator(__p, *__resource(), _VSTD::forward<_Args>(__args)...);
+        __uninitialized_construct_using_allocator(__p, __resource, _VSTD::forward<_Args>(__args)...);
     }
 
     template <class _Up>

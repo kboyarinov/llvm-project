@@ -26,7 +26,7 @@ int main(int, char**)
         TestResource r(1);
         std::pmr::polymorphic_allocator<int> alloc(&r);
 
-        assert(a.resource() == &r);
+        assert(alloc.resource() == &r);
     }
     return 0;
 }
