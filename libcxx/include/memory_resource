@@ -37,7 +37,8 @@
 //   memory_resource* set_default_resource(memory_resource* r) noexcept;
 //   memory_resource* get_default_resource() noexcept;
 
-//   template <class Tp>
+//   template <class Tp>             // until C++20
+//   template <class Tp = std::byte> // since C++20
 //   class polymorphic_allocator {
 //   public:
 //     using value_type = Tp;
@@ -53,26 +54,40 @@
 //     polymorphic_allocator&
 //       operator=(const polymorphic_allocator& rhs) = delete;
 
-//     Tp* allocate(size_t n);
+//     Tp* allocate(size_t n);                                                                          // until C++20
+//     [[nodiscard]] Tp* allocate(size_t n);                                                            // since C++20
 //     void deallocate(Tp* p, size_t n);
+
+//     [[nodiscard]] void* allocate_bytes(size_t nbytes, size_t alignment = alignof(std::max_align_t)); // since C++20
+//     void deallocate_bytes(void* p, size_t nbytes, size_t alignment = alignof(std::max_align_t));     // since C++20
+
+//     template <class T>
+//       [[nodiscard]] T* allocate_object(size_t n = 1);                                                // since C++20
+//     template <class T>
+//       void deallocate_object(T* p, size_t n = 1);                                                    // since C++20
+
+//     template <class T, class... CtorArgs>
+//       [[nodiscard]] T* new_object(CtorArgs&&... ctor_args);                                          // since C++20
+//     template <class T>
+//       void delete_object(T* p);                                                                      // since C++20
 
 //     template <class T, class... Args>
 //     void construct(T* p, Args&&... args);
 
 //     template <class T1, class T2, class... Args1, class... Args2>
 //       void construct(pair<T1, T2>* p, piecewise_construct_t,
-//                      tuple<Args1...> x, tuple<Args2...> y);
+//                      tuple<Args1...> x, tuple<Args2...> y);                                          // until C++20
 //     template <class T1, class T2>
-//       void construct(pair<T1, T2>* p);
+//       void construct(pair<T1, T2>* p);                                                               // until C++20
 //     template <class T1, class T2, class U, class V>
-//       void construct(pair<T1, T2>* p, U&& x, V&& y);
+//       void construct(pair<T1, T2>* p, U&& x, V&& y);                                                 // until C++20
 //     template <class T1, class T2, class U, class V>
-//       void construct(pair<T1, T2>* p, const pair<U, V>& pr);
+//       void construct(pair<T1, T2>* p, const pair<U, V>& pr);                                         // until C++20
 //     template <class T1, class T2, class U, class V>
-//       void construct(pair<T1, T2>* p, pair<U, V>&& pr);
+//       void construct(pair<T1, T2>* p, pair<U, V>&& pr);                                              // until C++20
 
 //     template <class T>
-//       void destroy(T* p);
+//       void destroy(T* p);                                                                            // deprecated since C++20
 
 //     polymorphic_allocator select_on_container_copy_construction() const;
 
@@ -85,13 +100,14 @@
 
 //   template <class T1, class T2>
 //   bool operator!=(const polymorphic_allocator<T1>& a,
-//                   const polymorphic_allocator<T2>& b) noexcept;
+//                   const polymorphic_allocator<T2>& b) noexcept;                                      // until C++20
 // }
 
 #include <__config>
 #include <__memory/uses_allocator_args.h>
 #include <cstddef>
 #include <limits>
+#include <memory>
 
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
 #pragma GCC system_header
@@ -138,7 +154,7 @@ private:
     return &__lhs == &__rhs || __lhs.is_equal(__rhs);
   }
 
-#if _LIBCPP_STD_VER > 17
+#if _LIBCPP_STD_VER <= 17
   _LIBCPP_INLINE_VISIBILITY
   friend bool operator!=(const memory_resource& __lhs,
                          const memory_resource& __rhs) _NOEXCEPT
@@ -160,7 +176,11 @@ memory_resource* set_default_resource(memory_resource*) _NOEXCEPT;
 _LIBCPP_FUNC_VIS
 memory_resource* get_default_resource() _NOEXCEPT;
 
-template <class _Tp>
+template <class _Tp
+#if _LIBCPP_STD_VER > 17
+           = byte
+#endif
+>
 class polymorphic_allocator {
 public:
     using value_type = _Tp;
@@ -179,7 +199,7 @@ public:
 
     polymorphic_allocator& operator=(const polymorphic_allocator&) = delete;
 
-    _Tp* allocate(size_t __n)
+    _LIBCPP_NODISCARD_AFTER_CXX17 _Tp* allocate(size_t __n)
     {
         if (__n > numeric_limits<size_t>::max() / sizeof(_Tp)) {
             __throw_bad_array_new_length();
@@ -191,6 +211,62 @@ public:
     {
         __resource->deallocate(__p, __n * sizeof(_Tp), _LIBCPP_ALIGNOF(_Tp));
     }
+
+#if _LIBCPP_STD_VER > 17
+    _LIBCPP_NODISCARD void* allocate_bytes(size_t __nbytes,
+                                           size_t __alignment = _LIBCPP_ALIGNOF(max_align_t))
+    {
+        return __resource->allocate(__nbytes, __alignment);
+    }
+
+    void deallocate_bytes(void* __p, size_t __nbytes,
+                          size_t __alignment = _LIBCPP_ALIGNOF(max_align_t))
+    {
+        __resource->deallocate(__p, __nbytes, __alignment);
+    }
+
+    template <class _Up>
+    _LIBCPP_NODISCARD _Up* allocate_object(size_t __n = 1)
+    {
+        if (__n > numeric_limits<size_t>::max() / sizeof(_Up)) {
+            __throw_bad_array_new_length();
+        }
+        return static_cast<_Up*>(allocate_bytes(__n * sizeof(_Up), _LIBCPP_ALIGNOF(_Up)));
+    }
+
+    template <class _Up>
+    void deallocate_object(_Up* __p, size_t __n = 1)
+    {
+        deallocate_bytes(__p, __n * sizeof(_Up), _LIBCPP_ALIGNOF(_Up));
+    }
+
+    template <class _Up, class... _CtorArgs>
+    _LIBCPP_NODISCARD _Up* new_object(_CtorArgs&&... __ctor_args)
+    {
+        _Up* __object_ptr = allocate_object<_Up>();
+#ifndef _LIBCPP_NO_EXCEPTIONS
+        try
+        {
+#endif
+            construct(__object_ptr, _VSTD::forward<_CtorArgs>(__ctor_args)...);
+#ifndef _LIBCPP_NO_EXCEPTIONS
+        }
+        catch (...)
+        {
+            deallocate_object(__object_ptr);
+            throw;
+        }
+#endif
+        return __object_ptr;
+    }
+
+    template <class _Up>
+    void delete_object(_Up* __ptr)
+    {
+        allocator_traits<polymorphic_allocator>::destroy(*this, __ptr);
+        deallocate_object(__ptr);
+    }
+#endif // _LIBCPP_STD_VER > 17
 
     template <class _Up, class... _Args>
     void construct(_Up* __p, _Args&&... __args)

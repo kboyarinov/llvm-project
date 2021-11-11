@@ -49,7 +49,7 @@ void testAllocateExceptionsForSize() {
     std::pmr::polymorphic_allocator<ValueType> alloc = &r;
 
     try {
-        alloc.allocate(Traits::max_size(alloc) + 1);
+        [[maybe_unused]] ValueType* ret = alloc.allocate(Traits::max_size(alloc) + 1);
         assert(false);
     } catch (const std::bad_array_new_length&) {}
 }

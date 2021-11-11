@@ -24,5 +24,11 @@ int main(int, char**)
         using alloc_type = std::pmr::polymorphic_allocator<int>;
         ASSERT_SAME_TYPE(alloc_type::value_type, int);
     }
+#if TEST_STD_VER > 17
+    {
+        using alloc_type = std::pmr::polymorphic_allocator<>;
+        ASSERT_SAME_TYPE(alloc_type::value_type, std::byte);
+    }
+#endif
     return 0;
 }
