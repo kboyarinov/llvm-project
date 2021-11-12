@@ -87,7 +87,7 @@
 //       void construct(pair<T1, T2>* p, pair<U, V>&& pr);                                              // until C++20
 
 //     template <class T>
-//       void destroy(T* p);                                                                            // deprecated since C++20
+//       void destroy(T* p);
 
 //     polymorphic_allocator select_on_container_copy_construction() const;
 
