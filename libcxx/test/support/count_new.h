@@ -245,6 +245,11 @@ public:
         return disable_checking || n != last_new_size;
     }
 
+    bool checkLastNewSizeGreaterThan(std::size_t n) const
+    {
+        return disable_checking || last_new_size > n;
+    }
+
     bool checkLastNewAlignEq(std::size_t n) const
     {
         return disable_checking || n == last_new_align;

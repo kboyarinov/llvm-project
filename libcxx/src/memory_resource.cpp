@@ -135,4 +135,58 @@ memory_resource* set_default_resource(memory_resource* __desired) _NOEXCEPT
     return __default_resource.exchange(__desired);
 }
 
+struct monotonic_buffer_resource::_BufferHolder
+{
+    _BufferHolder(_BufferHolder* __prev, size_t __size,
+                  size_t __alignment, void* __buf)
+        : __prev_holder(__prev), __buffer_size(__size),
+          __buffer_alignment(__alignment), __buffer(__buf) {}
+
+    _BufferHolder* __prev_holder;
+    size_t __buffer_size;
+    size_t __buffer_alignment;
+    void* __buffer;
+};
+
+void* monotonic_buffer_resource::__allocate_from_next_buffer(size_t __bytes, size_t __alignment)
+{
+    size_t __buffer_size = __bytes > __next_buffer_size ? __bytes : __next_buffer_size;
+    // Allocate the holder and next_buffer
+    void* __holder_and_buffer = __upstream_resource->allocate(__buffer_size + sizeof(_BufferHolder),
+                                                              __alignment);
+    void* __next_buffer = reinterpret_cast<char*>(__holder_and_buffer) + sizeof(_BufferHolder);
+
+    // Construct the holder
+    ::new(__holder_and_buffer) _BufferHolder(__current_holder, __buffer_size,
+                                             __alignment, __next_buffer);
+    __current_holder = reinterpret_cast<_BufferHolder*>(__holder_and_buffer);
+
+    __current_buffer = __next_buffer;
+    __next_buffer_size = __next_buffer_size * __growth_factor;
+    __remaining_bytes = __buffer_size;
+
+    void* __ptr = align(__alignment, __bytes, __next_buffer, __remaining_bytes);
+    _LIBCPP_ASSERT(__ptr != nullptr, nullptr);
+
+    __current_buffer = reinterpret_cast<char*>(__current_buffer) + __bytes;
+    __remaining_bytes -= __bytes;
+    return __ptr;
+}
+
+void monotonic_buffer_resource::release()
+{
+    while (__current_holder)
+    {
+        _BufferHolder* __current = __current_holder;
+        __current_holder = __current_holder->__prev_holder;
+
+        // Deallocate __current
+        size_t __allocated_size = sizeof(_BufferHolder) + __current->__buffer_size;
+        size_t __alignment = __current->__buffer_alignment;
+
+        __current->~_BufferHolder();
+        __upstream_resource->deallocate(__current, __allocated_size, __alignment);
+    }
+}
+
 _LIBCPP_END_NAMESPACE_PMR

@@ -101,6 +101,32 @@
 //   template <class T1, class T2>
 //   bool operator!=(const polymorphic_allocator<T1>& a,
 //                   const polymorphic_allocator<T2>& b) noexcept;                                      // until C++20
+
+//   class monotonic_buffer_resource : public memory_resource {
+//   public:
+//     explicit monotonic_buffer_resource(memory_resource* upstream);
+//     monotonic_buffer_resource(size_t initial_size, memory_resource* upstream);
+//     monotonic_buffer_resource(void* buffer, size_t buffer_size,
+//                               memory_resource* upstream);
+
+//     monotonic_buffer_resource();
+//     explicit monotonic_buffer_resource(size_t initial_size);
+//     monotonic_buffer_resource(void* buffer, size_t buffer_size);
+
+//     monotonic_buffer_resource(const monotonic_buffer_resource&) = delete;
+
+//     virtual ~monotonic_buffer_resource();
+
+//     monotonic_buffer_resource operator=(const monotonic_buffer_resource&) = delete;
+
+//     void release();
+//     memory_resource* upstream_resource() const;
+//   protected:
+//     void* do_allocate(size_t bytes, size_t alignment) override;
+//     void do_deallocate(void* p, size_t bytes, size_t alignment) override;
+
+//     bool do_is_equal(const memory_resource& other) const noexcept override;
+//   };
 // }
 
 #include <__config>
@@ -181,7 +207,8 @@ template <class _Tp
            = byte
 #endif
 >
-class polymorphic_allocator {
+class polymorphic_allocator
+{
 public:
     using value_type = _Tp;
 
@@ -304,6 +331,83 @@ bool operator!=(const polymorphic_allocator<_Tp>& __a, const polymorphic_allocat
 {
     return !(__a == __b);
 }
+
+class _LIBCPP_TYPE_VIS monotonic_buffer_resource : public memory_resource
+{
+public:
+  explicit monotonic_buffer_resource(memory_resource* __upstream)
+    : __upstream_resource(__upstream),
+      __current_buffer(nullptr),
+      __next_buffer_size(__initial_buffer_size),
+      __remaining_bytes(0),
+      __current_holder(nullptr) {}
+  monotonic_buffer_resource(size_t __initial_size, memory_resource* __upstream)
+    : __upstream_resource(__upstream),
+      __current_buffer(nullptr),
+      __next_buffer_size(__initial_size),
+      __remaining_bytes(0),
+      __current_holder(nullptr) {}
+  monotonic_buffer_resource(void* __buffer, size_t __buffer_size, memory_resource* __upstream)
+    : __upstream_resource(__upstream),
+      __current_buffer(__buffer),
+      __next_buffer_size(__buffer_size * __growth_factor),
+      __remaining_bytes(__buffer_size),
+      __current_holder(nullptr) {}
+
+  monotonic_buffer_resource()
+    : monotonic_buffer_resource(get_default_resource()) {}
+  explicit monotonic_buffer_resource(size_t __initial_size)
+    : monotonic_buffer_resource(__initial_size, get_default_resource()) {}
+  monotonic_buffer_resource(void* __buffer, size_t __initial_size)
+    : monotonic_buffer_resource(__buffer, __initial_size, get_default_resource()) {}
+
+  monotonic_buffer_resource(const monotonic_buffer_resource&) = delete;
+
+  virtual ~monotonic_buffer_resource() { release(); }
+
+  monotonic_buffer_resource operator=(const monotonic_buffer_resource&) = delete;
+
+  void release();
+
+  memory_resource* upstream_resource() const
+  {
+      return __upstream_resource;
+  }
+protected:
+  void* do_allocate(size_t __bytes, size_t __alignment) override
+  {
+    void* __p = align(__alignment, __bytes, __current_buffer, __remaining_bytes);
+
+    if (__p)
+    {
+      // Allocate from __current_buffer
+      __current_buffer = reinterpret_cast<char*>(__current_buffer) + __bytes;
+      __remaining_bytes -= __bytes;
+      return __p;
+    } else
+    {
+      // Alocate from next buffer
+      return __allocate_from_next_buffer(__bytes, __alignment);
+    }
+  }
+  void do_deallocate(void*, size_t, size_t) override {}
+  bool do_is_equal(const memory_resource& other) const noexcept override
+  {
+    return this == &other;
+  }
+private:
+  void* __allocate_from_next_buffer(size_t __bytes, size_t __alignment);
+
+  struct _BufferHolder;
+  static constexpr size_t __initial_buffer_size = 16; // discussion point
+  static constexpr size_t __growth_factor = 2;        // discussion point
+
+  memory_resource* __upstream_resource;
+  void* __current_buffer;
+  size_t __next_buffer_size;
+  size_t __remaining_bytes;
+  _BufferHolder* __current_holder;
+}; // class monotonic_buffer_resource
 
 _LIBCPP_END_NAMESPACE_PMR
 
