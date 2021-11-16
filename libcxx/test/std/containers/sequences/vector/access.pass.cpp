@@ -122,10 +122,10 @@ void test() {
 
 int main(int, char**)
 {
-    test<std::vector<int>>();
-    test<std::vector<EqComparable>>();
+    test<std::vector<int> >();
+    test<std::vector<EqComparable> >();
 #if TEST_STD_VER >= 11
-    test<std::vector<int, min_allocator<int>>>();
+    test<std::vector<int, min_allocator<int> > >();
 #endif
 
   return 0;
