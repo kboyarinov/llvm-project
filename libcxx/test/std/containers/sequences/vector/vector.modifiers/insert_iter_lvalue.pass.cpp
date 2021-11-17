@@ -36,21 +36,21 @@ int main(int, char**)
             assert(v[j] == 0);
     }
     {
-        const size_t size = 100;
-        std::vector<int> v(size);
-        v.reserve(size + 1);
+        const size_t n = 100;
+        std::vector<int> v(n);
+        v.reserve(n + 1);
         const int value = 1;
 
         // no reallocation expected
-        std::vector<int>::iterator it = v.insert(v.cbegin() + size, value);
+        std::vector<int>::iterator it = v.insert(v.cbegin() + n, value);
 
-        assert(v.size() == size + 1);
+        assert(v.size() == n + 1);
         assert(is_contiguous_container_asan_correct(v));
-        assert(it == v.begin() + size);
-        for (size_t i = 0; i < size; ++i) {
+        assert(it == v.begin() + n);
+        for (size_t i = 0; i < n; ++i) {
             assert(v[i] == 0);
         }
-        assert(v[size] == value);
+        assert(v[n] == value);
     }
     {
         std::vector<int> v(100);

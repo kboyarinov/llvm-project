@@ -56,7 +56,7 @@ int main(int, char**)
         try {
             v.reserve(sz);
             assert(false);
-        } catch (std::length_error&) {
+        } catch (const std::length_error&) {
             assert(v.size() == 0);
             assert(v.capacity() == 0);
         }

@@ -39,7 +39,7 @@ struct EqComparable {
 
 template <typename C>
 C
-make(int size, int start = 0)
+make(int size, int start)
 {
     C c;
     for (int i = 0; i < size; ++i)
@@ -48,62 +48,61 @@ make(int size, int start = 0)
 }
 
 template <typename Vector>
-void test_get_basic(Vector& c, int N = 0) {
+void test_get_basic(Vector& c, int start_value) {
     for (int i = 0; i < 10; ++i)
-        assert(c[i] == N + i);
+        assert(c[i] == start_value + i);
     for (int i = 0; i < 10; ++i)
-        assert(c.at(i) == N + i);
+        assert(c.at(i) == start_value + i);
 
 #ifndef TEST_HAS_NO_EXCEPTIONS
     try {
         c.at(10);
         assert(false);
-    } catch (std::out_of_range&) {}
+    } catch (const std::out_of_range&) {}
 #endif
 
-    assert(c.front() == N);
-    assert(c.back() == N + 9);
+    assert(c.front() == start_value);
+    assert(c.back() == start_value + 9);
 }
 
 template <typename Vector>
-void test_get(int N = 0) {
-    Vector c = make<Vector>(10, N);
+void test_get() {
+    int start_value = 35;
+    Vector c = make<Vector>(10, start_value);
     const Vector& cc = c;
-    test_get_basic(c, N);
-    test_get_basic(cc, N);
+    test_get_basic(c, start_value);
+    test_get_basic(cc, start_value);
 }
 
 template <typename Vector>
-void test_set(int N = 0) {
-    Vector c = make<Vector>(10, N);
+void test_set() {
+    int start_value = 35;
+    Vector c = make<Vector>(10, start_value);
 
     for (int i = 0; i < 10; ++i) {
-        assert(c[i] == N + i);
-        c[i] = N + i + 1;
-        assert(c[i] == N + i + 1);
+        assert(c[i] == start_value + i);
+        c[i] = start_value + i + 1;
+        assert(c[i] == start_value + i + 1);
     }
     for (int i = 0; i < 10; ++i) {
-        assert(c.at(i) == N + i + 1);
-        c.at(i) = N + i + 2;
-        assert(c.at(i) == N + i + 2);
+        assert(c.at(i) == start_value + i + 1);
+        c.at(i) = start_value + i + 2;
+        assert(c.at(i) == start_value + i + 2);
     }
 
-    assert(c.front() == N + 2);
-    c.front() = N + 3;
-    assert(c.front() == N + 3);
+    assert(c.front() == start_value + 2);
+    c.front() = start_value + 3;
+    assert(c.front() == start_value + 3);
 
-    assert(c.back() == N + 9 + 2);
-    c.back() = N + 9 + 3;
-    assert(c.back() == N + 9 + 3);
+    assert(c.back() == start_value + 9 + 2);
+    c.back() = start_value + 9 + 3;
+    assert(c.back() == start_value + 9 + 3);
 }
 
 template <typename Vector>
 void test() {
     test_get<Vector>();
     test_set<Vector>();
-
-    test_get<Vector>(36);
-    test_set<Vector>(36);
 
     Vector c;
     const Vector& cc = c;
@@ -126,6 +125,7 @@ int main(int, char**)
     test<std::vector<EqComparable> >();
 #if TEST_STD_VER >= 11
     test<std::vector<int, min_allocator<int> > >();
+    test<std::vector<EqComparable, min_allocator<EqComparable> > >();
 #endif
 
   return 0;

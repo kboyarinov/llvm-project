@@ -25,17 +25,8 @@ template <class Vector>
 void check_vector_reverse_iterators() {
     {
         Vector vec;
-        typename Vector::reverse_iterator i = vec.rbegin();
-        typename Vector::reverse_iterator j = vec.rend();
-
-        assert(std::distance(i, j) == 0);
-        assert(i == j);
-
-        typename Vector::const_reverse_iterator ci = vec.crbegin();
-        typename Vector::const_reverse_iterator cj = vec.crend();
-
-        assert(std::distance(ci, cj) == 0);
-        assert(ci == cj);
+        assert(vec.rbegin() == vec.rend());
+        assert(vec.crbegin() == vec.crend());
     }
     {
         Vector vec;
@@ -81,7 +72,9 @@ void check_vector_reverse_iterators() {
 
 int main(int, char**) {
     check_vector_reverse_iterators<std::vector<int> >();
+#if TEST_STD_VER >= 11
     check_vector_reverse_iterators<std::vector<int, min_allocator<int> > >();
+#endif
 
     return 0;
 }
