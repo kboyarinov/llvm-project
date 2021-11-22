@@ -95,6 +95,7 @@ set(files
   __availability
   __bit_reference
   __bit/bit_cast.h
+  __bit/byteswap.h
   __bits
   __bsd_locale_defaults.h
   __bsd_locale_fallbacks.h
@@ -144,6 +145,7 @@ set(files
   __format/format_fwd.h
   __format/format_parse_context.h
   __format/format_string.h
+  __format/format_to_n_result.h
   __format/formatter.h
   __format/formatter_bool.h
   __format/formatter_char.h
@@ -282,6 +284,7 @@ set(files
   __support/xlocale/__nop_locale_mgmt.h
   __support/xlocale/__posix_l_fallback.h
   __support/xlocale/__strtonum_fallback.h
+  __thread/poll_with_backoff.h
   __threading_support
   __tree
   __tuple
