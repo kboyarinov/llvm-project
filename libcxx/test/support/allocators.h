@@ -194,7 +194,6 @@ public:
     typedef T value_type;
 
     MaybePOCCAAllocator() = default;
-    explicit MaybePOCCAAllocator(int id) : id_(id) {}
     MaybePOCCAAllocator(int id, bool* copy_assigned_into)
         : id_(id), copy_assigned_into_(copy_assigned_into) {}
 
