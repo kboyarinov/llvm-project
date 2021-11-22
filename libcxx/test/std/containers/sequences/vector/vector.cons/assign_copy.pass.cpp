@@ -36,37 +36,38 @@ int main(int, char**)
 #if TEST_STD_VER >= 11
     {
         // Test with Allocator::propagate_on_container_copy_assignment == false_type
-        A2<int>::copy_called = false;
-        assert(!std::allocator_traits<A1<int> >::propagate_on_container_copy_assignment::value);
-        std::vector<int, A1<int> > l(3, 2, A1<int>(5));
-        std::vector<int, A1<int> > l2(l, A1<int>(3));
+        typedef POCCAAllocator<int, /*POCCAValue = */false> Alloc;
+        Alloc::reset();
+        std::vector<int, Alloc> l(3, 2, Alloc(5));
+        std::vector<int, Alloc> l2(l, Alloc(3));
         l2 = l;
         assert(l2 == l);
-        assert(l2.get_allocator() == A1<int>(3));
-        assert(!A2<int>::copy_called);
+        assert(l2.get_allocator() == Alloc(3));
+        assert(!Alloc::copy_assign_called);
     }
     {
         // Test with Allocator::propagate_on_container_copy_assignment == true_type
         // and equal allocators
-        A3<int>::copy_called = false;
-        assert(std::allocator_traits<A3<int> >::propagate_on_container_copy_assignment::value);
-        std::vector<int, A3<int> > l(3, 2, A3<int>(5));
-        std::vector<int, A3<int> > l2(l, A3<int>(5));
+        typedef POCCAAllocator<int, /*POCCAValue = */true> Alloc;
+        Alloc::reset();
+        std::vector<int, Alloc> l(3, 2, Alloc(5));
+        std::vector<int, Alloc> l2(l, Alloc(5));
         l2 = l;
         assert(l2 == l);
-        assert(l2.get_allocator() == A3<int>(5));
-        assert(A3<int>::copy_called);
+        assert(l2.get_allocator() == Alloc(5));
+        assert(Alloc::copy_assign_called);
     }
     {
         // Test with Allocator::propagate_on_container_copy_assignment == true_type
         // and unequal allocators
-        A3<int>::copy_called = false;
-        std::vector<int, A3<int> > l(3, 2, A3<int>(5));
-        std::vector<int, A3<int> > l2(l, A3<int>(3));
+        typedef POCCAAllocator<int, /*POCCAValue = */true> Alloc;
+        Alloc::reset();
+        std::vector<int, Alloc> l(3, 2, Alloc(5));
+        std::vector<int, Alloc> l2(l, Alloc(3));
         l2 = l;
         assert(l2 == l);
-        assert(l2.get_allocator() == A3<int>(5));
-        assert(A3<int>::copy_called);
+        assert(l2.get_allocator() == Alloc(5));
+        assert(Alloc::copy_assign_called);
     }
     {
         std::vector<int, min_allocator<int> > l(3, 2, min_allocator<int>());

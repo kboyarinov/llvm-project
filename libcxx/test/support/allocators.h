@@ -45,13 +45,12 @@ public:
     T* allocate(std::size_t n)
     {
         allocate_called = true;
-        return static_cast<T*>(::operator new(n * sizeof(T)));
+        return (T*)n;
     }
 
     void deallocate(T* p, std::size_t n)
     {
         deallocate_called = std::pair<T*, std::size_t>(p, n);
-        ::operator delete(p);
     }
 
     std::size_t max_size() const {return id_;}
@@ -150,16 +149,6 @@ public:
     A3& operator=(const A3& a) TEST_NOEXCEPT { id_ = a.id(); copy_called = true; return *this;}
     A3& operator=(A3&& a)      TEST_NOEXCEPT { id_ = a.id(); move_called = true; return *this;}
 
-    T* allocate(std::size_t n)
-    {
-        return static_cast<T*>(::operator new(n * sizeof(T)));
-    }
-
-    void deallocate(T* p, std::size_t)
-    {
-        ::operator delete(p);
-    }
-
     template <class U, class ...Args>
     void construct(U* p, Args&& ...args)
     {
@@ -195,6 +184,56 @@ bool operator!=(const A3<T>& x, const A3<U>& y)
 {
     return !(x == y);
 }
+
+template <class T, bool POCCAValue = false>
+class POCCAAllocator {
+    int id_;
+public:
+    typedef std::integral_constant<bool, POCCAValue> propagate_on_container_copy_assignment;
+    typedef T value_type;
+
+    static bool copy_assign_called;
+
+    explicit POCCAAllocator(int id = 0) : id_(id) {}
+
+    POCCAAllocator(const POCCAAllocator&) = default;
+    POCCAAllocator& operator=(const POCCAAllocator& a)
+    {
+        id_ = a.id();
+        copy_assign_called = true;
+        return *this;
+    }
+
+    T* allocate(std::size_t n)
+    {
+        return static_cast<T*>(::operator new(n * sizeof(T)));
+    }
+
+    void deallocate(T* ptr, std::size_t)
+    {
+        ::operator delete(ptr);
+    }
+
+    int id() const { return id_; }
+
+    static void reset()
+    {
+        copy_assign_called = false;
+    }
+
+    friend bool operator==(const POCCAAllocator& lhs, const POCCAAllocator& rhs)
+    {
+        return lhs.id() == rhs.id();
+    }
+
+    friend bool operator!=(const POCCAAllocator& lhs, const POCCAAllocator& rhs)
+    {
+        return !(lhs == rhs);
+    }
+};
+
+template <class T, bool POCCAValue>
+bool POCCAAllocator<T, POCCAValue>::copy_assign_called = false;
 
 #endif // TEST_STD_VER >= 11
 

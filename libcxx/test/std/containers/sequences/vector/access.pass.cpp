@@ -27,7 +27,7 @@
 #include "min_allocator.h"
 #include "test_macros.h"
 
-template <typename C>
+template <class C>
 C
 make(int size, int start)
 {
@@ -37,7 +37,7 @@ make(int size, int start)
     return c;
 }
 
-template <typename Vector>
+template <class Vector>
 void test_get_basic(Vector& c, int start_value) {
     for (int i = 0; i < 10; ++i)
         assert(c[i] == start_value + i);
@@ -55,7 +55,7 @@ void test_get_basic(Vector& c, int start_value) {
     assert(c.back() == start_value + 9);
 }
 
-template <typename Vector>
+template <class Vector>
 void test_get() {
     int start_value = 35;
     Vector c = make<Vector>(10, start_value);
@@ -64,7 +64,7 @@ void test_get() {
     test_get_basic(cc, start_value);
 }
 
-template <typename Vector>
+template <class Vector>
 void test_set() {
     int start_value = 35;
     Vector c = make<Vector>(10, start_value);
@@ -89,7 +89,7 @@ void test_set() {
     assert(c.back() == start_value + 9 + 3);
 }
 
-template <typename Vector>
+template <class Vector>
 void test() {
     test_get<Vector>();
     test_set<Vector>();
