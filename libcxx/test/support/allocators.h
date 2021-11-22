@@ -185,22 +185,25 @@ bool operator!=(const A3<T>& x, const A3<U>& y)
     return !(x == y);
 }
 
-template <class T, bool POCCAValue = false>
-class POCCAAllocator {
-    int id_;
+template <class T, bool POCCAValue>
+class MaybePOCCAAllocator {
+    int id_ = 0;
+    bool* copy_assigned_into_ = nullptr;
 public:
     typedef std::integral_constant<bool, POCCAValue> propagate_on_container_copy_assignment;
     typedef T value_type;
 
-    static bool copy_assign_called;
+    MaybePOCCAAllocator() = default;
+    explicit MaybePOCCAAllocator(int id) : id_(id) {}
+    MaybePOCCAAllocator(int id, bool* copy_assigned_into)
+        : id_(id), copy_assigned_into_(copy_assigned_into) {}
 
-    explicit POCCAAllocator(int id = 0) : id_(id) {}
-
-    POCCAAllocator(const POCCAAllocator&) = default;
-    POCCAAllocator& operator=(const POCCAAllocator& a)
+    MaybePOCCAAllocator(const MaybePOCCAAllocator&) = default;
+    MaybePOCCAAllocator& operator=(const MaybePOCCAAllocator& a)
     {
         id_ = a.id();
-        copy_assign_called = true;
+        if (copy_assigned_into_)
+            *copy_assigned_into_ = true;
         return *this;
     }
 
@@ -216,24 +219,21 @@ public:
 
     int id() const { return id_; }
 
-    static void reset()
-    {
-        copy_assign_called = false;
-    }
-
-    friend bool operator==(const POCCAAllocator& lhs, const POCCAAllocator& rhs)
+    friend bool operator==(const MaybePOCCAAllocator& lhs, const MaybePOCCAAllocator& rhs)
     {
         return lhs.id() == rhs.id();
     }
 
-    friend bool operator!=(const POCCAAllocator& lhs, const POCCAAllocator& rhs)
+    friend bool operator!=(const MaybePOCCAAllocator& lhs, const MaybePOCCAAllocator& rhs)
     {
         return !(lhs == rhs);
     }
 };
 
-template <class T, bool POCCAValue>
-bool POCCAAllocator<T, POCCAValue>::copy_assign_called = false;
+template <class T>
+using POCCAAllocator = MaybePOCCAAllocator<T, /*POCCAValue = */true>;
+template <class T>
+using NonPOCCAAllocator = MaybePOCCAAllocator<T, /*POCCAValue = */false>;
 
 #endif // TEST_STD_VER >= 11
 
