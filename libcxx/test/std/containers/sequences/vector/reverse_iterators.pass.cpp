@@ -44,13 +44,8 @@ void check_vector_reverse_iterators() {
             assert(iterations == 10);
         }
         {
-            int iterations = 0;
-
-            for (typename Vector::const_reverse_iterator it = cvec.rbegin(); it != cvec.rend(); ++it) {
-                assert(*it == (10 - iterations - 1));
-                ++iterations;
-            }
-            assert(iterations == 10);
+            assert(cvec.rbegin() == vec.crbegin());
+            assert(cvec.rend() == vec.crend());
         }
         {
             int iterations = 0;
@@ -67,6 +62,7 @@ void check_vector_reverse_iterators() {
         assert(std::distance(vec.rbegin(), vec.rend()) == 10);
         assert(std::distance(cvec.rbegin(), cvec.rend()) == 10);
         assert(std::distance(vec.crbegin(), vec.crend()) == 10);
+        assert(std::distance(cvec.crbegin(), cvec.crend()) == 10);
     }
 }
 

@@ -27,16 +27,6 @@
 #include "min_allocator.h"
 #include "test_macros.h"
 
-struct EqComparable {
-    int value;
-
-    EqComparable(int v) : value(v) {}
-
-    friend bool operator==(const EqComparable& lhs, const EqComparable& rhs) {
-        return lhs.value == rhs.value;
-    }
-};
-
 template <typename C>
 C
 make(int size, int start)
@@ -122,10 +112,8 @@ void test() {
 int main(int, char**)
 {
     test<std::vector<int> >();
-    test<std::vector<EqComparable> >();
 #if TEST_STD_VER >= 11
     test<std::vector<int, min_allocator<int> > >();
-    test<std::vector<EqComparable, min_allocator<EqComparable> > >();
 #endif
 
   return 0;

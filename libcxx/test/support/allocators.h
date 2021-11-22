@@ -45,12 +45,13 @@ public:
     T* allocate(std::size_t n)
     {
         allocate_called = true;
-        return (T*)n;
+        return static_cast<T*>(::operator new(n * sizeof(T)));
     }
 
     void deallocate(T* p, std::size_t n)
     {
         deallocate_called = std::pair<T*, std::size_t>(p, n);
+        ::operator delete(p);
     }
 
     std::size_t max_size() const {return id_;}
@@ -148,6 +149,16 @@ public:
     A3(A3&& a)      TEST_NOEXCEPT : id_(a.id())  {move_called = true;}
     A3& operator=(const A3& a) TEST_NOEXCEPT { id_ = a.id(); copy_called = true; return *this;}
     A3& operator=(A3&& a)      TEST_NOEXCEPT { id_ = a.id(); move_called = true; return *this;}
+
+    T* allocate(std::size_t n)
+    {
+        return static_cast<T*>(::operator new(n * sizeof(T)));
+    }
+
+    void deallocate(T* p, std::size_t)
+    {
+        ::operator delete(p);
+    }
 
     template <class U, class ...Args>
     void construct(U* p, Args&& ...args)

@@ -62,7 +62,8 @@ int main(int, char**)
         }
     }
     {
-        std::vector<int> v(10, 0);
+        std::vector<int> v(10, 42);
+        int* previous_data = v.data();
         size_t previous_capacity = v.capacity();
         size_t sz = v.max_size() + 1;
 
@@ -72,9 +73,10 @@ int main(int, char**)
         } catch (std::length_error&) {
             assert(v.size() == 10);
             assert(v.capacity() == previous_capacity);
+            assert(v.data() == previous_data);
 
             for (int i = 0; i < 10; ++i) {
-                assert(v[i] == 0);
+                assert(v[i] == 42);
             }
         }
     }
