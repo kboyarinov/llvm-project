@@ -39,20 +39,21 @@ make(int size, int start)
 
 template <class Vector>
 void test_get_basic(Vector& c, int start_value) {
-    for (int i = 0; i < 10; ++i)
+    const int n = c.size();
+    for (int i = 0; i < n; ++i)
         assert(c[i] == start_value + i);
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < n; ++i)
         assert(c.at(i) == start_value + i);
 
 #ifndef TEST_HAS_NO_EXCEPTIONS
     try {
-        c.at(10);
+        c.at(n);
         assert(false);
     } catch (const std::out_of_range&) {}
 #endif
 
     assert(c.front() == start_value);
-    assert(c.back() == start_value + 9);
+    assert(c.back() == start_value + n - 1);
 }
 
 template <class Vector>
@@ -67,14 +68,15 @@ void test_get() {
 template <class Vector>
 void test_set() {
     int start_value = 35;
-    Vector c = make<Vector>(10, start_value);
+    const int n = 10;
+    Vector c = make<Vector>(n, start_value);
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < n; ++i) {
         assert(c[i] == start_value + i);
         c[i] = start_value + i + 1;
         assert(c[i] == start_value + i + 1);
     }
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < n; ++i) {
         assert(c.at(i) == start_value + i + 1);
         c.at(i) = start_value + i + 2;
         assert(c.at(i) == start_value + i + 2);
@@ -84,9 +86,9 @@ void test_set() {
     c.front() = start_value + 3;
     assert(c.front() == start_value + 3);
 
-    assert(c.back() == start_value + 9 + 2);
-    c.back() = start_value + 9 + 3;
-    assert(c.back() == start_value + 9 + 3);
+    assert(c.back() == start_value + n + 1);
+    c.back() = start_value + n + 2;
+    assert(c.back() == start_value + n + 2);
 }
 
 template <class Vector>
