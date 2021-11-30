@@ -31,6 +31,5 @@ int main(int, char**) {
         assert(d.get_allocator() == alloc);
     }
 #endif
-
     return 0;
 }
