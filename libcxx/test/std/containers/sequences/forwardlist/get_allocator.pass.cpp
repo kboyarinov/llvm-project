@@ -24,12 +24,11 @@ int main(int, char**) {
         const std::forward_list<int> fl(alloc);
         assert(fl.get_allocator() == alloc);
     }
-#if TEST_STD_VER >= 11
     {
         other_allocator<int> alloc(1);
-        const std::forward_list<int, other_allocator<int>> fl(alloc);
+        const std::forward_list<int, other_allocator<int> > fl(alloc);
         assert(fl.get_allocator() == alloc);
     }
-#endif
+
     return 0;
 }

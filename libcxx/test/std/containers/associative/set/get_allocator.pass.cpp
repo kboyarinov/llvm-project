@@ -24,12 +24,10 @@ int main(int, char**) {
         const std::set<int> s(alloc);
         assert(s.get_allocator() == alloc);
     }
-#if TEST_STD_VER >= 11
     {
         other_allocator<int> alloc(1);
-        const std::set<int, std::less<int>, other_allocator<int>> s(alloc);
+        const std::set<int, std::less<int>, other_allocator<int> > s(alloc);
         assert(s.get_allocator() == alloc);
     }
-#endif
     return 0;
 }

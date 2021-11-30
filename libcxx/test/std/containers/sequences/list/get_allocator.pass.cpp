@@ -24,12 +24,11 @@ int main(int, char**) {
         const std::list<int> l(alloc);
         assert(l.get_allocator() == alloc);
     }
-#if TEST_STD_VER >= 11
     {
         other_allocator<int> alloc(1);
-        const std::list<int, other_allocator<int>> l(alloc);
+        const std::list<int, other_allocator<int> > l(alloc);
         assert(l.get_allocator() == alloc);
     }
-#endif
+
     return 0;
 }

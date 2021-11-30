@@ -21,15 +21,14 @@
 int main(int, char**) {
     {
         std::allocator<int> alloc;
-        const std::vector<int> vb(alloc);
-        assert(vb.get_allocator() == alloc);
+        const std::vector<int> v(alloc);
+        assert(v.get_allocator() == alloc);
     }
-#if TEST_STD_VER >= 11
     {
         other_allocator<int> alloc(1);
-        const std::vector<int, other_allocator<int>> vb(alloc);
-        assert(vb.get_allocator() == alloc);
+        const std::vector<int, other_allocator<int> > v(alloc);
+        assert(v.get_allocator() == alloc);
     }
-#endif
+
     return 0;
 }

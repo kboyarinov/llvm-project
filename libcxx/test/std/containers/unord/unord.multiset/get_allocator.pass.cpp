@@ -24,14 +24,13 @@ int main(int, char**) {
         const std::unordered_multiset<int> s(alloc);
         assert(s.get_allocator() == alloc);
     }
-#if TEST_STD_VER >= 11
     {
         other_allocator<int> alloc(1);
         const std::unordered_multiset<int, std::hash<int>,
                                       std::equal_to<int>,
-                                      other_allocator<int>> s(alloc);
+                                      other_allocator<int> > s(alloc);
         assert(s.get_allocator() == alloc);
     }
-#endif
+
     return 0;
 }
