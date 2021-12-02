@@ -48,6 +48,7 @@ int main(int, char**)
         assert(is_contiguous_container_asan_correct(v2));
     }
     {
+        // Test copy ctor with empty source
         std::vector<int, test_allocator<int> > v(test_allocator<int>(5));
         std::vector<int, test_allocator<int> > v2 = v;
         assert(is_contiguous_container_asan_correct(v));
@@ -56,6 +57,7 @@ int main(int, char**)
         assert(v2.get_allocator() == v.get_allocator());
         assert(is_contiguous_container_asan_correct(v));
         assert(is_contiguous_container_asan_correct(v2));
+        assert(v2.empty());
     }
 #if TEST_STD_VER >= 11
     {

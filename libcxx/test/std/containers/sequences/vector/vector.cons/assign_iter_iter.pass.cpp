@@ -66,18 +66,17 @@ void test_emplaceable_concept() {
 #endif
 }
 
+// Test with the number of elements in source range
+// that is greater than capacity
 void test_assign_bigger() {
   typedef forward_iterator<int*> It;
 
-  std::vector<int> src;
-  src.resize(256);
-  src.shrink_to_fit();
+  std::vector<int> dst(10);
 
-  std::vector<int> dst;
-  dst.resize(128);
-  dst.shrink_to_fit();
+  size_t n = dst.capacity() * 2;
+  std::vector<int> src(n);
 
-  dst.assign(It(&src[0]), It(&src[0] + src.size()));
+  dst.assign(It(src.data()), It(src.data() + src.size()));
   assert(dst == src);
 }
 
