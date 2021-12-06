@@ -66,7 +66,7 @@ void test_emplaceable_concept() {
 #endif
 }
 
-// Test with the number of elements in source range
+// Test with a number of elements in the source range
 // that is greater than capacity
 void test_assign_bigger() {
   typedef forward_iterator<int*> It;
