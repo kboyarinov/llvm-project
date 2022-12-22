@@ -2630,7 +2630,11 @@ operator!=(const unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
 _LIBCPP_END_NAMESPACE_STD
 
 #if _LIBCPP_STD_VER > 14
-_LIBCPP_BEGIN_NAMESPACE_STD_PMR
+
+namespace std {
+
+namespace pmr {
+
 template <class _KeyT, class _ValueT, class _HashT = std::hash<_KeyT>, class _PredT = std::equal_to<_KeyT>>
 using unordered_map =
     std::unordered_map<_KeyT, _ValueT, _HashT, _PredT, std::pmr::polymorphic_allocator<std::pair<const _KeyT, _ValueT>>>;
@@ -2638,7 +2642,11 @@ using unordered_map =
 template <class _KeyT, class _ValueT, class _HashT = std::hash<_KeyT>, class _PredT = std::equal_to<_KeyT>>
 using unordered_multimap =
     std::unordered_multimap<_KeyT, _ValueT, _HashT, _PredT, std::pmr::polymorphic_allocator<std::pair<const _KeyT, _ValueT>>>;
-_LIBCPP_END_NAMESPACE_STD_PMR
+
+} // namespace pmr
+
+} // namespace std
+
 #endif
 
 #if !defined(_LIBCPP_REMOVE_TRANSITIVE_INCLUDES) && _LIBCPP_STD_VER <= 20

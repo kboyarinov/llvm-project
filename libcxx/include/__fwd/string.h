@@ -90,7 +90,7 @@ namespace std {
 namespace pmr {
 
 template <class _CharT, class _Traits = char_traits<_CharT>>
-using basic_string = std::basic_string<_CharT, _Traits, std::pmr::polymorphic_allocator<_CharT>>;
+using basic_string = std::basic_string<_CharT, _Traits, polymorphic_allocator<_CharT>>;
 
 using string = basic_string<char>;
 

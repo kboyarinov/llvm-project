@@ -12,6 +12,7 @@
 #include <__assert>
 #include <__config>
 #include <__memory_resource/memory_resource.h>
+#include <__utility/transaction.h>
 #include <cstddef>
 #include <limits>
 #include <new>
@@ -27,7 +28,7 @@ _LIBCPP_PUSH_MACROS
 
 #if _LIBCPP_STD_VER > 14
 
-namespace std  { // purposefully not using versioning namespace
+namespace std { // purposefully not using versioning namespace
 
 namespace pmr {
 
@@ -214,7 +215,7 @@ operator!=(const polymorphic_allocator<_Tp>& __lhs, const polymorphic_allocator<
 
 } // namespace pmr
 
-}
+} // namespace std
 
 #endif // _LIBCPP_STD_VER > 14
 

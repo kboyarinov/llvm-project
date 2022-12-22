@@ -18,7 +18,7 @@
 
 #if _LIBCPP_STD_VER > 14
 
-namespace std  { // purposefully not using versioning namespace
+namespace std { // purposefully not using versioning namespace
 
 namespace pmr {
 
@@ -31,7 +31,7 @@ struct _LIBCPP_TYPE_VIS pool_options {
 
 } // namespace pmr
 
-}
+} // namespace std
 
 #endif // _LIBCPP_STD_VER > 14
 

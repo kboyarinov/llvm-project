@@ -1585,13 +1585,21 @@ inline _LIBCPP_INLINE_VISIBILITY
 _LIBCPP_END_NAMESPACE_STD
 
 #if _LIBCPP_STD_VER > 14
-_LIBCPP_BEGIN_NAMESPACE_STD_PMR
+
+namespace std {
+
+namespace pmr {
+
 template <class _KeyT, class _CompareT = std::less<_KeyT>>
 using set = std::set<_KeyT, _CompareT, std::pmr::polymorphic_allocator<_KeyT>>;
 
 template <class _KeyT, class _CompareT = std::less<_KeyT>>
 using multiset = std::multiset<_KeyT, _CompareT, std::pmr::polymorphic_allocator<_KeyT>>;
-_LIBCPP_END_NAMESPACE_STD_PMR
+
+} // namespace pmr
+
+} // namespace std
+
 #endif
 
 #if !defined(_LIBCPP_REMOVE_TRANSITIVE_INCLUDES) && _LIBCPP_STD_VER <= 20
