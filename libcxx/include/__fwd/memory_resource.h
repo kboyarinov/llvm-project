@@ -15,7 +15,7 @@
 #  pragma GCC system_header
 #endif
 
-namespace std  { // purposefully not using versioning namespace
+namespace std { // purposefully not using versioning namespace
 
 namespace pmr {
 template <class _ValueType>

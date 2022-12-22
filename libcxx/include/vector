@@ -3272,12 +3272,18 @@ inline constexpr bool __format::__enable_insertable<std::vector<wchar_t>> = true
 _LIBCPP_END_NAMESPACE_STD
 
 #if _LIBCPP_STD_VER > 14
-_LIBCPP_BEGIN_NAMESPACE_STD_PMR
+
+namespace std {
+
 namespace pmr {
+
 template <class _ValueT>
 using vector = std::vector<_ValueT, std::pmr::polymorphic_allocator<_ValueT>>;
+
 } // namespace pmr
-_LIBCPP_END_NAMESPACE_STD_PMR
+
+} // namespace std
+
 #endif
 
 _LIBCPP_POP_MACROS

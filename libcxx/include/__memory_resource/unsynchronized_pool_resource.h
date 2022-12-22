@@ -21,7 +21,7 @@
 
 #if _LIBCPP_STD_VER > 14
 
-namespace std  { // purposefully not using versioning namespace
+namespace std { // purposefully not using versioning namespace
 
 namespace pmr {
 
@@ -99,7 +99,7 @@ private:
 
 } // namespace pmr
 
-}
+} // namespace std
 
 #endif // _LIBCPP_STD_VER > 14
 

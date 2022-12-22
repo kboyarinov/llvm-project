@@ -30,7 +30,6 @@ namespace std {
 namespace pmr {
 
 memory_resource* get_default_resource() noexcept {
-    printf("Debug: compat get_default_resouce\n");
 #ifdef __cpp_aligned_new
     return ::_Aligned_get_default_resource();
 #else
@@ -39,7 +38,6 @@ memory_resource* get_default_resource() noexcept {
 }
 
 memory_resource* set_default_resource(memory_resource* __new_res) noexcept {
-    printf("Debug: compat set_default_resouce\n");
 #ifdef __cpp_aligned_new
     return ::_Aligned_set_default_resource(__new_res);
 #else

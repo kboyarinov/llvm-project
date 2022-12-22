@@ -1780,10 +1780,18 @@ inline _LIBCPP_INLINE_VISIBILITY
 _LIBCPP_END_NAMESPACE_STD
 
 #if _LIBCPP_STD_VER > 14
-_LIBCPP_BEGIN_NAMESPACE_STD_PMR
+
+namespace std {
+
+namespace pmr {
+
 template <class _ValueT>
 using forward_list = std::forward_list<_ValueT, std::pmr::polymorphic_allocator<_ValueT>>;
-_LIBCPP_END_NAMESPACE_STD_PMR
+
+} // namespace pmr
+
+} // namespace std
+
 #endif
 
 _LIBCPP_POP_MACROS
