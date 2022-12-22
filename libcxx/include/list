@@ -2367,10 +2367,8 @@ _LIBCPP_END_NAMESPACE_STD
 namespace std {
 
 namespace pmr {
-
 template <class _ValueT>
-using list = std::list<_ValueT, std::pmr::polymorphic_allocator<_ValueT>>;
-
+using list = std::list<_ValueT, polymorphic_allocator<_ValueT>>;
 } // namespace pmr
 
 } // namespace std

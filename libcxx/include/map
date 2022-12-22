@@ -2344,13 +2344,11 @@ _LIBCPP_END_NAMESPACE_STD
 namespace std {
 
 namespace pmr {
+template <class _KeyT, class _ValueT, class _CompareT = std::less<_KeyT>>
+using map = std::map<_KeyT, _ValueT, _CompareT, polymorphic_allocator<std::pair<const _KeyT, _ValueT>>>;
 
 template <class _KeyT, class _ValueT, class _CompareT = std::less<_KeyT>>
-using map = std::map<_KeyT, _ValueT, _CompareT, std::pmr::polymorphic_allocator<std::pair<const _KeyT, _ValueT>>>;
-
-template <class _KeyT, class _ValueT, class _CompareT = std::less<_KeyT>>
-using multimap = std::multimap<_KeyT, _ValueT, _CompareT, std::pmr::polymorphic_allocator<std::pair<const _KeyT, _ValueT>>>;
-
+using multimap = std::multimap<_KeyT, _ValueT, _CompareT, polymorphic_allocator<std::pair<const _KeyT, _ValueT>>>;
 } // namespace pmr
 
 } // namespace std
