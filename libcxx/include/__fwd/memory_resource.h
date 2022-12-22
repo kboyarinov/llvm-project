@@ -22,6 +22,6 @@ template <class _ValueType>
 class _LIBCPP_TEMPLATE_VIS polymorphic_allocator;
 } // namespace pmr
 
-}
+} // namespace std
 
 #endif // _LIBCPP___FWD_MEMORY_RESOURCE_H

@@ -57,32 +57,6 @@ using u8string = basic_string<char8_t>;
 using u16string = basic_string<char16_t>;
 using u32string = basic_string<char32_t>;
 
-#if _LIBCPP_STD_VER >= 17
-
-_LIBCPP_END_NAMESPACE_STD
-_LIBCPP_BEGIN_NAMESPACE_STD_PMR
-
-template <class _CharT, class _Traits = char_traits<_CharT>>
-using basic_string = std::basic_string<_CharT, _Traits, std::pmr::polymorphic_allocator<_CharT>>;
-
-using string = basic_string<char>;
-
-#  ifndef _LIBCPP_HAS_NO_WIDE_CHARACTERS
-using wstring = basic_string<wchar_t>;
-#  endif
-
-#  ifndef _LIBCPP_HAS_NO_CHAR8_T
-using u8string = basic_string<char8_t>;
-#  endif
-
-using u16string = basic_string<char16_t>;
-using u32string = basic_string<char32_t>;
-
-_LIBCPP_END_NAMESPACE_STD_PMR
-_LIBCPP_BEGIN_NAMESPACE_STD
-
-#endif // _LIBCPP_STD_VER >= 17
-
 // clang-format off
 template <class _CharT, class _Traits, class _Allocator>
 class _LIBCPP_PREFERRED_NAME(string)
@@ -109,5 +83,32 @@ class _LIBCPP_PREFERRED_NAME(string)
 // clang-format on
 
 _LIBCPP_END_NAMESPACE_STD
+
+#if _LIBCPP_STD_VER >= 17
+
+namespace std {
+namespace pmr {
+
+template <class _CharT, class _Traits = char_traits<_CharT>>
+using basic_string = std::basic_string<_CharT, _Traits, std::pmr::polymorphic_allocator<_CharT>>;
+
+using string = basic_string<char>;
+
+#  ifndef _LIBCPP_HAS_NO_WIDE_CHARACTERS
+using wstring = basic_string<wchar_t>;
+#  endif
+
+#  ifndef _LIBCPP_HAS_NO_CHAR8_T
+using u8string = basic_string<char8_t>;
+#  endif
+
+using u16string = basic_string<char16_t>;
+using u32string = basic_string<char32_t>;
+
+} // namespace pmr
+
+} // namespace std
+
+#endif // _LIBCPP_STD_VER >= 17
 
 #endif // _LIBCPP___FWD_STRING_H
