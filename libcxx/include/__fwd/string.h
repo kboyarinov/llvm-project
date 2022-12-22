@@ -106,7 +106,6 @@ using u16string = basic_string<char16_t>;
 using u32string = basic_string<char32_t>;
 
 } // namespace pmr
-
 } // namespace std
 
 #endif // _LIBCPP_STD_VER >= 17

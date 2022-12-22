@@ -1589,13 +1589,11 @@ _LIBCPP_END_NAMESPACE_STD
 namespace std {
 
 namespace pmr {
+template <class _KeyT, class _CompareT = std::less<_KeyT>>
+using set = std::set<_KeyT, _CompareT, polymorphic_allocator<_KeyT>>;
 
 template <class _KeyT, class _CompareT = std::less<_KeyT>>
-using set = std::set<_KeyT, _CompareT, std::pmr::polymorphic_allocator<_KeyT>>;
-
-template <class _KeyT, class _CompareT = std::less<_KeyT>>
-using multiset = std::multiset<_KeyT, _CompareT, std::pmr::polymorphic_allocator<_KeyT>>;
-
+using multiset = std::multiset<_KeyT, _CompareT, polymorphic_allocator<_KeyT>>;
 } // namespace pmr
 
 } // namespace std
