@@ -1288,7 +1288,7 @@ static void printMemExtendImpl(bool SignExtend, bool DoShift, unsigned Width,
     O << " ";
     if (UseMarkup)
       O << "<imm:";
-    O << " #" << Log2_32(Width / 8);
+    O << "#" << Log2_32(Width / 8);
     if (UseMarkup)
       O << ">";
   }
@@ -1914,9 +1914,12 @@ void AArch64InstPrinter::printSystemPStateField(const MCInst *MI, unsigned OpNo,
                                                 raw_ostream &O) {
   unsigned Val = MI->getOperand(OpNo).getImm();
 
-  auto PState = AArch64PState::lookupPStateByEncoding(Val);
-  if (PState && PState->haveFeatures(STI.getFeatureBits()))
-    O << PState->Name;
+  auto PStateImm15 = AArch64PState::lookupPStateImm0_15ByEncoding(Val);
+  auto PStateImm1 = AArch64PState::lookupPStateImm0_1ByEncoding(Val);
+  if (PStateImm15 && PStateImm15->haveFeatures(STI.getFeatureBits()))
+    O << PStateImm15->Name;
+  else if (PStateImm1 && PStateImm1->haveFeatures(STI.getFeatureBits()))
+    O << PStateImm1->Name;
   else
     O << "#" << formatImm(Val);
 }
