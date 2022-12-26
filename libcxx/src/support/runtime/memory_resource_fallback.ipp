@@ -11,50 +11,6 @@ namespace std {
 
 namespace pmr {
 
-// default_memory_resource()
-
-static memory_resource* __default_memory_resource(bool set = false, memory_resource* new_res = nullptr) noexcept {
-#ifndef _LIBCPP_HAS_NO_ATOMIC_HEADER
-  static constinit atomic<memory_resource*> __res{&res_init.resources.new_delete_res};
-  if (set) {
-    new_res = new_res ? new_res : new_delete_resource();
-    // TODO: Can a weaker ordering be used?
-    return std::atomic_exchange_explicit(&__res, new_res, memory_order_acq_rel);
-  } else {
-    return std::atomic_load_explicit(&__res, memory_order_acquire);
-  }
-#elif !defined(_LIBCPP_HAS_NO_THREADS)
-  static constinit memory_resource* res = &res_init.resources.new_delete_res;
-  static mutex res_lock;
-  if (set) {
-    new_res = new_res ? new_res : new_delete_resource();
-    lock_guard<mutex> guard(res_lock);
-    memory_resource* old_res = res;
-    res = new_res;
-    return old_res;
-  } else {
-    lock_guard<mutex> guard(res_lock);
-    return res;
-  }
-#else
-  static constinit memory_resource* res = &res_init.resources.new_delete_res;
-  if (set) {
-    new_res                  = new_res ? new_res : new_delete_resource();
-    memory_resource* old_res = res;
-    res                      = new_res;
-    return old_res;
-  } else {
-    return res;
-  }
-#endif
-}
-
-memory_resource* get_default_resource() noexcept { return __default_memory_resource(); }
-
-memory_resource* set_default_resource(memory_resource* __new_res) noexcept {
-  return __default_memory_resource(true, __new_res);
-}
-
 // new_delete_resource()
 
 #ifdef _LIBCPP_HAS_NO_ALIGNED_ALLOCATION
@@ -116,6 +72,50 @@ union ResourceInitHelper {
 memory_resource* new_delete_resource() noexcept { return &res_init.resources.new_delete_res; }
 
 memory_resource* null_memory_resource() noexcept { return &res_init.resources.null_res; }
+
+// default_memory_resource()
+
+static memory_resource* __default_memory_resource(bool set = false, memory_resource* new_res = nullptr) noexcept {
+#ifndef _LIBCPP_HAS_NO_ATOMIC_HEADER
+  static constinit atomic<memory_resource*> __res{&res_init.resources.new_delete_res};
+  if (set) {
+    new_res = new_res ? new_res : new_delete_resource();
+    // TODO: Can a weaker ordering be used?
+    return std::atomic_exchange_explicit(&__res, new_res, memory_order_acq_rel);
+  } else {
+    return std::atomic_load_explicit(&__res, memory_order_acquire);
+  }
+#elif !defined(_LIBCPP_HAS_NO_THREADS)
+  static constinit memory_resource* res = &res_init.resources.new_delete_res;
+  static mutex res_lock;
+  if (set) {
+    new_res = new_res ? new_res : new_delete_resource();
+    lock_guard<mutex> guard(res_lock);
+    memory_resource* old_res = res;
+    res = new_res;
+    return old_res;
+  } else {
+    lock_guard<mutex> guard(res_lock);
+    return res;
+  }
+#else
+  static constinit memory_resource* res = &res_init.resources.new_delete_res;
+  if (set) {
+    new_res                  = new_res ? new_res : new_delete_resource();
+    memory_resource* old_res = res;
+    res                      = new_res;
+    return old_res;
+  } else {
+    return res;
+  }
+#endif
+}
+
+memory_resource* get_default_resource() noexcept { return __default_memory_resource(); }
+
+memory_resource* set_default_resource(memory_resource* __new_res) noexcept {
+  return __default_memory_resource(true, __new_res);
+}
 
 } // namespace pmr
 } // namespace std
