@@ -59,7 +59,11 @@ using u32string = basic_string<char32_t>;
 
 #if _LIBCPP_STD_VER >= 17
 
+_LIBCPP_END_NAMESPACE_STD
+
+namespace std {
 namespace pmr {
+
 template <class _CharT, class _Traits = char_traits<_CharT>>
 using basic_string = std::basic_string<_CharT, _Traits, polymorphic_allocator<_CharT>>;
 
@@ -77,6 +81,9 @@ using u16string = basic_string<char16_t>;
 using u32string = basic_string<char32_t>;
 
 } // namespace pmr
+} // namespace std
+
+_LIBCPP_BEGIN_NAMESPACE_STD
 
 #endif // _LIBCPP_STD_VER >= 17
 

@@ -28,7 +28,7 @@ _LIBCPP_PUSH_MACROS
 
 #if _LIBCPP_STD_VER > 14
 
-_LIBCPP_BEGIN_NAMESPACE_STD
+namespace std { // purposefully not using versioning namespace
 
 namespace pmr {
 
@@ -215,7 +215,7 @@ operator!=(const polymorphic_allocator<_Tp>& __lhs, const polymorphic_allocator<
 
 } // namespace pmr
 
-_LIBCPP_END_NAMESPACE_STD
+} // namespace std
 
 #endif // _LIBCPP_STD_VER > 14
 
