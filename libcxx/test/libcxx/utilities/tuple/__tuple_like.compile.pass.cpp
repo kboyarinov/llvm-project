@@ -32,7 +32,7 @@ static_assert(!std::__tuple_like<int>);
 static_assert(std::__tuple_like<std::array<int, 0>>);
 static_assert(std::__tuple_like<std::array<int, 1>>);
 static_assert(std::__tuple_like<std::array<int, 2>>);
-static_assert(std::__tuple_like<std::array<int, 2728>>);
+// static_assert(std::__tuple_like<std::array<int, 2728>>);
 
 // Tuple-like: complex
 

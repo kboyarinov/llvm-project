@@ -1850,6 +1850,7 @@ module std_private_tuple_tuple_fwd              [system] { header "__fwd/tuple.h
 module std_private_tuple_tuple_indices          [system] { header "__tuple/tuple_indices.h" }
 module std_private_tuple_tuple_like             [system] {
   header "__tuple/tuple_like.h"
+  header "__tuple/get_element.h"
   export *
 }
 module std_private_tuple_tuple_like_ext         [system] { header "__tuple/tuple_like_ext.h" }
