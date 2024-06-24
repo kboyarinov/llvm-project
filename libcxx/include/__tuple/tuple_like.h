@@ -44,9 +44,9 @@ requires {
 };
 
 template <class _Tp, std::size_t _Nidx>
-concept __has_tuple_element =
+concept __can_get_tuple_element =
+    __has_tuple_size<_Tp> &&
     requires(_Tp __t) {
-        typename std::tuple_size<_Tp>::type;
         requires _Nidx < std::tuple_size_v<_Tp>;
         typename std::tuple_element_t<_Nidx, _Tp>;
         { std::get_element<_Nidx>(__t) } -> std::convertible_to<const std::tuple_element_t<_Nidx, _Tp>&>;
@@ -70,8 +70,7 @@ template <class _Tp>
 concept __tuple_like = !is_reference_v<_Tp> &&
                        __has_tuple_size<_Tp> &&
                        []<std::size_t... _Idx>(std::index_sequence<_Idx...>) {
-                        //    return (... && __has_tuple_element<_Tp, _Idx>);
-                        return std::conjunction_v<std::bool_constant<__has_tuple_element<_Tp, _Idx>>...>;
+                           return (... && __can_get_tuple_element<_Tp, _Idx>);
                        } (std::make_index_sequence<std::tuple_size_v<_Tp>>{});
                     //    __has_tuple_element_helper<_Tp>::value;
 
